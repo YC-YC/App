@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">YCWideget</string>
+    <string name="bluetoothmusic">蓝牙音乐</string>
+    <string name="fm">FM</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="audio">音乐</string>
+    <string name="bt">蓝牙音乐</string>
+    <string name="defaultsongname">Unknown Song</string>
+    <string name="defaultbtsongname">Unknown Song</string>
+    <string name="fm_freq1">89</string>
+    <string name="fm_freq2">92</string>
+    <string name="fm_freq3">95</string>
+    <string name="fm_freq4">98</string>
+    <string name="fm_freq5">101</string>
+    <string name="fm_freq6">104</string>
+    <string name="fm_freq7">107</string>
+    <string name="fm_app_name">FM发射</string>
+    <string name="fm_state">已关闭</string>
+</resources>

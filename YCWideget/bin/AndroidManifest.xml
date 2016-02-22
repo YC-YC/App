@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.ycwideget"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="18" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+
+        <!-- 主线程 -->
+        <service android:name="com.example.ycwideget.LaodServer" >
+        </service>
+
+        <!-- 蓝牙音乐共用 -->
+        <receiver
+            android:name="com.example.ycwideget.BluetoothMusicWidget"
+            android:label="@string/bluetoothmusic" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="" />
+                <action android:name="com.example.ycwidget.UPDATE_BTAUDIO" />
+                <action android:name="com.example.ycwidget.UPDATE_BTAUDIO_BT" />
+                <action android:name="com.example.ycwidget.UPDATE_BTAUDIO_AUDIO" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/bluetoothwidget" />
+        </receiver>
+
+        <!-- FM -->
+        <receiver android:name="com.example.ycwideget.FMWidget" >
+            <intent-filter>
+                <!-- widget属性 -->
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- 接收更新数据 -->
+                <action android:name="com.example.ycwidget.UPDATE_FM" />
+            </intent-filter>
+            <!-- 指定widget资源文件 -->
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/fmwidget" />
+        </receiver>
+    </application>
+
+</manifest>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="218dp"
+    android:layout_height="350dp"
+    android:background="@drawable/fm_bg" >
+
+    <ImageView
+        android:id="@+id/fm_freq"
+        android:layout_width="218dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="20dp" />
+
+    <FrameLayout
+        android:id="@+id/img_fm_slider"
+        android:layout_width="match_parent"
+        android:layout_height="98dp"
+        android:layout_below="@id/fm_freq"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/fm_freq" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginTop="68dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                style="@style/fm_freq"
+                android:layout_marginLeft="5dp"
+                android:text="@string/fm_freq1" />
+
+            <TextView
+                style="@style/fm_freq"
+                android:text="@string/fm_freq2" />
+
+            <TextView
+                style="@style/fm_freq"
+                android:text="@string/fm_freq3" />
+
+            <TextView
+                style="@style/fm_freq"
+                android:text="@string/fm_freq4" />
+
+            <TextView
+                style="@style/fm_freq"
+                android:text="@string/fm_freq5" />
+
+            <TextView
+                style="@style/fm_freq"
+                android:text="@string/fm_freq6" />
+
+            <TextView
+                style="@style/fm_freq"
+                android:text="@string/fm_freq7" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/fm_line"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_fm_app_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/img_fm_slider"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="@string/fm_app_name"
+        android:textColor="#ffffff"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_fm_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_fm_app_name"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:text="@string/fm_state"
+        android:textColor="#8ae8d9"
+        android:textSize="16sp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_fm_state"
+        android:layout_marginTop="18dp"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/fm_togglebutton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/fm_close_selector" />
+    </LinearLayout>
+
+</RelativeLayout>

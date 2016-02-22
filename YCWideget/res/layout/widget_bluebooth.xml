@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="218dp"
+    android:layout_height="350dp" >
+  
+    <!-- 音乐 -->
+    <LinearLayout
+        android:id="@+id/audio_widget"
+        android:layout_width="218dp"
+        android:layout_height="350dp"
+        android:orientation="vertical"
+        android:visibility="gone" 
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="259dp"
+            android:background="@drawable/bt_color_shape"
+            android:gravity="center_vertical"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/audio_top_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/app_audio_name"
+                    android:layout_width="200dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="22dp"
+                     android:layout_marginLeft="9dp"
+                    android:gravity="center"
+                    android:text="@string/audio"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/song_name"
+                    android:layout_width="200dp"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginLeft="9dp"
+                    android:alpha="0.5"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:text="@string/defaultsongname"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/audio_pinpu"
+                    android:layout_width="218dp"
+                    android:layout_height="98dp"
+                    android:layout_marginTop="0dp"
+                    android:src="@drawable/music_pingpu" />
+            </LinearLayout>
+		<ImageView 
+		     android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight="1"
+             />
+            <LinearLayout
+                android:id="@+id/audio_bottom_layout"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="18dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:soundEffectsEnabled="false" >
+
+                <ImageView
+                    android:id="@+id/audio_play_pause"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:soundEffectsEnabled="false"
+                    
+                    android:background="@null"
+                    android:src="@drawable/play_selector" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/to_btmusic"
+            android:layout_width="218dp"
+            android:layout_height="88dp"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/to_btmusic_icon" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bt_widget"
+        android:layout_width="218dp"
+        android:layout_height="350dp"
+        android:orientation="vertical"
+        android:visibility="visible" 
+        >
+
+        <ImageView
+            android:id="@+id/to_audio"
+            android:layout_width="218dp"
+            android:layout_height="88dp"
+            android:background="@drawable/to_audio_icon" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="259dp"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/audio_color_shape"
+            android:gravity="center_vertical"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/bt_top_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/app_bt_name"
+                    android:layout_width="200dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="9dp"
+                    android:layout_marginTop="22dp"
+                    android:gravity="center"
+                    android:text="@string/bt"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/bt_song_name"
+                    android:layout_width="200dp"
+                    android:layout_height="28dp"
+                    android:layout_marginLeft="9dp"
+                    android:layout_marginTop="3dp"
+                    android:alpha="0.5"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:text="@string/defaultbtsongname"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/bt_pinpu"
+                    android:layout_width="218dp"
+                    android:layout_height="98dp"
+                    android:layout_marginTop="0dp"
+                    android:src="@drawable/bt_pingpu" />
+            </LinearLayout>
+			<ImageView 
+		     android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight="1"
+             />
+            <LinearLayout
+                android:id="@+id/bt_bottom_layout"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="18dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:soundEffectsEnabled="false" >
+
+                <ImageView
+                    android:id="@+id/bt_play_pause"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:soundEffectsEnabled="false"
+                    android:background="@null"
+                    android:src="@drawable/play_selector" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
