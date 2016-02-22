@@ -1,0 +1,163 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:orientation="horizontal" >
+
+        <com.zhonghong.camera.CameraSurfaceView
+            android:id="@+id/cameraShow"
+            android:layout_width="200dp"
+            android:layout_height="150dp" />
+
+        <ScrollView
+            android:layout_height="200dp"
+            android:layout_width="0dp"
+            android:layout_weight="1" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:id="@+id/tv_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/hello_world" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/bt_setfreq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="设置频率" />
+
+            <Button
+                android:id="@+id/bt_fmonoff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="开关" />
+
+            <Button
+                android:id="@+id/bt_setvideo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="测试视频" />
+            <Button
+                android:id="@+id/bt_colsevideo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="关闭视频" />
+
+            <Button
+                android:id="@+id/bt_takephoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="拍照" />
+
+            <Button
+                android:id="@+id/bt_record"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="录影" />
+
+            <Button
+                android:id="@+id/bt_closetft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="关屏" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/bt_getmedia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="媒体信息" />
+
+        <Button
+            android:id="@+id/bt_getbt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="蓝牙信息" />
+
+        <Button
+            android:id="@+id/bt_getdvr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="doClick"
+            android:text="获取DVR信息" />
+
+        <Button
+            android:id="@+id/bt_setedogmode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="doClick"
+            android:text="设置电子狗模式" />
+
+        <Button
+            android:id="@+id/bt_setlimitespeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="doClick"
+            android:text="设置限速" />
+
+        <Button
+            android:id="@+id/bt_playshoot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="doClick"
+            android:text="拍照声" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/bt_getrunningtask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="doClick"
+            android:text="获取任务栈" />
+        <Button
+            android:id="@+id/bt_openandplaymusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="doClick"
+            android:text="打开本地音乐" />
+        <Button
+            android:id="@+id/bt_openandplayvideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="doClick"
+            android:text="打开本地视频" />
+        <Button
+            android:id="@+id/bt_voicestream"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="doClick"
+            android:text="音频" />
+    </LinearLayout>
+
+</LinearLayout>
