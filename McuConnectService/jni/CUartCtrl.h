@@ -19,9 +19,9 @@ public:
 	bool OpenUart(const char* pPath, unsigned int baud);
 	bool IsOpen();
 	void CloseUart();
-	bool Send(BYTE* buf, int len = -1);
-	void ProcRXData(const BYTE* buf, int len);	//接收数据
-	void RegRxFun(UART_READ_FUN fun);		//注册接收处理函数
+	bool Send(const BYTE* buf, int len = -1);
+	void ProcRXData(const BYTE* buf, int len);	//鎺ユ敹鏁版嵁澶勭悊
+	void RegRxFun(UART_READ_FUN fun);		//娉ㄥ唽鎺ユ敹鍑芥暟
 	void ThreadRead();
 
 private:

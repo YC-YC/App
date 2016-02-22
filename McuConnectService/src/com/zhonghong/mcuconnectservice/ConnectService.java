@@ -1,7 +1,5 @@
 package com.zhonghong.mcuconnectservice;
 
-import com.zhonghong.jni.JniClient;
-
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,16 +8,20 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.util.Log;
 
-public class ConnectService extends Service {
+import com.zhonghong.jni.JniClient;
+
+public class ConnectService extends Service implements Runnable {
 
 	private static final int MSG_UPDATE = 100;
 	private static final String TAG = "ConnectService";
 	
 	private Context mContext;
 	private MyHandle mHandler;
-	
+	private Thread mThread;
+	private boolean mThreadRun = false;
 	private int registerNum = 0;	//remote rigister num
 	final RemoteCallbackList<ITaskCallback> mRemoteCallbackList = new RemoteCallbackList<ITaskCallback>();
 
@@ -45,6 +47,7 @@ public class ConnectService extends Service {
 
 
 	private void init() {
+		startThread();
 		/*if (T.mColdHelper == null)
 		{
 			new ColdHelper(mContext);
@@ -59,6 +62,17 @@ public class ConnectService extends Service {
 		});*/
 	}
 
+	// 开始检测
+	private void startThread()
+	{
+		if (!mThreadRun)
+		{
+			mThreadRun = true;
+			mThread = new Thread(this, "jni_thread");
+			mThread.start();
+		}
+	}
+	
 	// bindService will do
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -110,28 +124,49 @@ public class ConnectService extends Service {
 		}
 
 		@Override
-		public void postCmd(int cmd) throws RemoteException {
+		public int getKeyStat() throws RemoteException {
+			return JniClient.getKeyStat();
+		}
+
+		@Override
+		public int getLEDStat() throws RemoteException {
+			return JniClient.getLEDStat();
+		}
+
+		@Override
+		public int getIOStat() throws RemoteException {
+			return JniClient.getIOStat();
+		}
+		
+		@Override
+		public void postCmd(int cmd, String arg) throws RemoteException {
 			LOG("postCmd = " + cmd);
-			JniClient.postCmd(cmd);
+			JniClient.postCmd(cmd, arg);
+		}
+
+		@Override
+		public String getVersion() throws RemoteException {
+			// TODO 自动生成的方法存根
+			return JniClient.getVersion();
 		}
 		
 	};
 	
 	//callback all register
-		private void serviceCallback()
+	private void serviceCallback()
+	{
+		int num = mRemoteCallbackList.beginBroadcast();
+		LOG("callback client num = " + num);
+		for (int i = 0; i < num; i++)
 		{
-			int num = mRemoteCallbackList.beginBroadcast();
-			LOG("callback client num = " + num);
-			for (int i = 0; i < num; i++)
-			{
-				try {
-					mRemoteCallbackList.getBroadcastItem(i).MCUCallback();
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+			try {
+				mRemoteCallbackList.getBroadcastItem(i).MCUCallback();
+			} catch (RemoteException e) {
+				e.printStackTrace();
 			}
-			mRemoteCallbackList.finishBroadcast();
 		}
+		mRemoteCallbackList.finishBroadcast();
+	}
 	
 	class MyHandle extends Handler
 	{
@@ -153,5 +188,29 @@ public class ConnectService extends Service {
 	
 	static{
 		System.loadLibrary("Connection");
+	}
+
+	/* （非 Javadoc）
+	 * @see java.lang.Runnable#run()
+	 */
+	@Override
+	public void run() {
+		// TODO 自动生成的方法存根
+		long lastTime = SystemClock.elapsedRealtime();
+		while (mThreadRun)
+		{
+			long nowTime = SystemClock.elapsedRealtime();
+			if (nowTime - lastTime > 20)
+			{
+				lastTime = nowTime;
+				JniClient.looper();
+			}
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 }

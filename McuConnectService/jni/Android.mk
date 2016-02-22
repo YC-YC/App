@@ -9,6 +9,6 @@ LOCAL_MODULE    := Connection
 
 LOCAL_C_INCLUDES	:= F:\zhonghong\include
 
-LOCAL_SRC_FILES := JniInterface.cpp CConnectMCU.cpp CUartCtrl.cpp UartCom.cpp
+LOCAL_SRC_FILES := JniInterface.cpp CConnectMCU.cpp CUartCtrl.cpp CUartInterfaceLoc.cpp
 
 include $(BUILD_SHARED_LIBRARY)

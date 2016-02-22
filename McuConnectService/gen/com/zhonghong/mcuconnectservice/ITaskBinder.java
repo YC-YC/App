@@ -71,12 +71,46 @@ reply.writeNoException();
 reply.writeInt(_result);
 return true;
 }
+case TRANSACTION_getKeyStat:
+{
+data.enforceInterface(DESCRIPTOR);
+int _result = this.getKeyStat();
+reply.writeNoException();
+reply.writeInt(_result);
+return true;
+}
+case TRANSACTION_getLEDStat:
+{
+data.enforceInterface(DESCRIPTOR);
+int _result = this.getLEDStat();
+reply.writeNoException();
+reply.writeInt(_result);
+return true;
+}
+case TRANSACTION_getIOStat:
+{
+data.enforceInterface(DESCRIPTOR);
+int _result = this.getIOStat();
+reply.writeNoException();
+reply.writeInt(_result);
+return true;
+}
+case TRANSACTION_getVersion:
+{
+data.enforceInterface(DESCRIPTOR);
+java.lang.String _result = this.getVersion();
+reply.writeNoException();
+reply.writeString(_result);
+return true;
+}
 case TRANSACTION_postCmd:
 {
 data.enforceInterface(DESCRIPTOR);
 int _arg0;
 _arg0 = data.readInt();
-this.postCmd(_arg0);
+java.lang.String _arg1;
+_arg1 = data.readString();
+this.postCmd(_arg0, _arg1);
 reply.writeNoException();
 return true;
 }
@@ -149,13 +183,82 @@ _data.recycle();
 }
 return _result;
 }
-@Override public void postCmd(int cmd) throws android.os.RemoteException
+@Override public int getKeyStat() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+int _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_getKeyStat, _data, _reply, 0);
+_reply.readException();
+_result = _reply.readInt();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
+@Override public int getLEDStat() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+int _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_getLEDStat, _data, _reply, 0);
+_reply.readException();
+_result = _reply.readInt();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
+@Override public int getIOStat() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+int _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_getIOStat, _data, _reply, 0);
+_reply.readException();
+_result = _reply.readInt();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
+@Override public java.lang.String getVersion() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+java.lang.String _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_getVersion, _data, _reply, 0);
+_reply.readException();
+_result = _reply.readString();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
+@Override public void postCmd(int cmd, java.lang.String arg) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
 try {
 _data.writeInterfaceToken(DESCRIPTOR);
 _data.writeInt(cmd);
+_data.writeString(arg);
 mRemote.transact(Stub.TRANSACTION_postCmd, _data, _reply, 0);
 _reply.readException();
 }
@@ -168,7 +271,11 @@ _data.recycle();
 static final int TRANSACTION_registerCallback = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_unregisterCallback = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
 static final int TRANSACTION_getStatus = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
-static final int TRANSACTION_postCmd = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
+static final int TRANSACTION_getKeyStat = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
+static final int TRANSACTION_getLEDStat = (android.os.IBinder.FIRST_CALL_TRANSACTION + 4);
+static final int TRANSACTION_getIOStat = (android.os.IBinder.FIRST_CALL_TRANSACTION + 5);
+static final int TRANSACTION_getVersion = (android.os.IBinder.FIRST_CALL_TRANSACTION + 6);
+static final int TRANSACTION_postCmd = (android.os.IBinder.FIRST_CALL_TRANSACTION + 7);
 }
 public void registerCallback(com.zhonghong.mcuconnectservice.ITaskCallback callback) throws android.os.RemoteException;
 //registerCallback that service callback client
@@ -177,5 +284,9 @@ public void unregisterCallback(com.zhonghong.mcuconnectservice.ITaskCallback cal
 //unregister
 
 public int getStatus() throws android.os.RemoteException;
-public void postCmd(int cmd) throws android.os.RemoteException;
+public int getKeyStat() throws android.os.RemoteException;
+public int getLEDStat() throws android.os.RemoteException;
+public int getIOStat() throws android.os.RemoteException;
+public java.lang.String getVersion() throws android.os.RemoteException;
+public void postCmd(int cmd, java.lang.String arg) throws android.os.RemoteException;
 }

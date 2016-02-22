@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     com_zhonghong_jni_JniClient
+ * Method:    looper
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_zhonghong_jni_JniClient_looper
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_zhonghong_jni_JniClient
  * Method:    HelloBlueTooth
  * Signature: ()V
  */
@@ -33,11 +41,43 @@ JNIEXPORT jint JNICALL Java_com_zhonghong_jni_JniClient_getStatus
 
 /*
  * Class:     com_zhonghong_jni_JniClient
+ * Method:    getKeyStat
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_zhonghong_jni_JniClient_getKeyStat
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_zhonghong_jni_JniClient
+ * Method:    getLEDStat
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_zhonghong_jni_JniClient_getLEDStat
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_zhonghong_jni_JniClient
+ * Method:    getIOStat
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_zhonghong_jni_JniClient_getIOStat
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_zhonghong_jni_JniClient
+ * Method:    getVersion
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_zhonghong_jni_JniClient_getVersion
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_zhonghong_jni_JniClient
  * Method:    postCmd
- * Signature: (I)V
+ * Signature: (ILjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_zhonghong_jni_JniClient_postCmd
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jint, jstring);
 
 #ifdef __cplusplus
 }

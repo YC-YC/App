@@ -98,7 +98,7 @@ void CUartCtrl::CloseUart()
 	close(mUartfd);
 	LeaveCriticalSection(&m_csCom);
 }
-bool CUartCtrl::Send(BYTE* buf, int len)
+bool CUartCtrl::Send(const BYTE* buf, int len)
 {
 	if (!m_bOpen)
 	{

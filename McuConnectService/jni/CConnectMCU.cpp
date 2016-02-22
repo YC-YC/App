@@ -1,6 +1,6 @@
 /*
  * ConnectMCU.cpp
- *
+ * 负责与外界对接
  *  Created on: 2016-1-12
  *      Author: YC
  */
@@ -8,69 +8,59 @@
 #include "CConnectMCU.h"
 #include "debug.h"
 
-static CConnectMCU* g_pCConnectMCU = NULL;
-
-static void ProcUartRxTemp(const BYTE* buff, int len)
-{
-	if (g_pCConnectMCU != NULL)
-	{
-		g_pCConnectMCU->GetUartCom()->ProcRxCmd(buff, len);
-	}
-}
 
 CConnectMCU::CConnectMCU()
 {
-	g_pCConnectMCU = this;
-	mUartCom = new UartCom();
-	mUart = new CUartCtrl();
-	OpenUart();
+	m_pFormData = new CFormData();
+	m_pUartInterface = new CUartInterfaceLoc();
 }
 CConnectMCU::~CConnectMCU()
 {
-	if (mUart != NULL)
+	if (m_pUartInterface != NULL)
 	{
-		delete mUart;
-		mUart = NULL;
+		delete m_pUartInterface;
+		m_pUartInterface = NULL;
 	}
-	if (mUartCom != NULL)
+	if (m_pFormData != NULL)
 	{
-		delete mUartCom;
-		mUartCom = NULL;
+		delete m_pFormData;
+		m_pFormData = NULL;
 	}
-	g_pCConnectMCU = NULL;
 }
 
-UartCom* CConnectMCU::GetUartCom()
+void CConnectMCU::Looper()
 {
-	return mUartCom;
+	if (m_pUartInterface != NULL)
+	{
+		m_pUartInterface->Looper();
+	}
 }
 
-const char* CConnectMCU::GetBlueToothVersion()
+const char* CConnectMCU::GetAppVersion()
 {
 	return "1.0";
 }
 
-void CConnectMCU::OpenUart()	//打开串口
+CUartInterfaceLoc* CConnectMCU::GetUartInterface()
 {
-	LOGI("OpenUart\r\n");
-	if (mUart != NULL)
-	{
-		LOGI("mUart != NULL\r\n");
-		if (!mUart->IsOpen())
-		{
-			LOGI("!mUart->IsOpen()\r\n");
-			mUart->OpenUart(BLUETOOTH_UART_NAME, BLUETOOTH_UART_BAUD);
-			mUart->RegRxFun(ProcUartRxTemp);
-		}
-	}
+	return m_pUartInterface;
 }
-void CConnectMCU::CloseUart()
+
+CFormData* CConnectMCU::GetFormData()
 {
-	if (mUart != NULL)
-	{
-		if (mUart->IsOpen())
-		{
-			mUart->CloseUart();
-		}
-	}
+	return m_pFormData;
 }
+
+int CConnectMCU::GetKeyStatus()
+{
+	return m_pFormData->m_KeyStatus;
+}
+int CConnectMCU::GetLEDStatus()
+{
+	m_pFormData->m_LEDStatus;
+}
+int CConnectMCU::GetIOStatus()
+{
+	m_pFormData->m_IOStatus;
+}
+

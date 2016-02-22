@@ -12,7 +12,7 @@
 static JNIEnv * gEnv = NULL;
 static JavaVM* g_Jvm = NULL;
 static jclass g_cls_JniClient = NULL;
-static CConnectMCU* pConnectMCU = NULL;
+CConnectMCU* g_pCConnectMCU = NULL;
 
 bool JNI_CallJavaIntStringStringMethod
 (JNIEnv * env, const char* function, int arg1, const char* arg2, char* result, int resultLen)
@@ -131,6 +131,15 @@ void HelloBlueTooth(JNIEnv *, jclass)
 
 }
 
+void jni_Looper
+ (JNIEnv *, jclass)
+{
+	if (g_pCConnectMCU != NULL)
+	{
+		g_pCConnectMCU->GetAppVersion();
+	}
+}
+
 jint jni_GetStatus
   (JNIEnv *, jclass)
 {
@@ -139,10 +148,47 @@ jint jni_GetStatus
 	return result;
 }
 
+jint jni_GetKeyStat
+  (JNIEnv *, jclass)
+{
+	return g_pCConnectMCU->GetKeyStatus();
+}
+
+jint jni_GetLEDStat
+  (JNIEnv *, jclass)
+{
+	return g_pCConnectMCU->GetLEDStatus();
+}
+
+jint jni_GetIOStat
+  (JNIEnv *, jclass)
+{
+	return g_pCConnectMCU->GetIOStatus();
+}
+
+jstring jni_GetVersion
+ (JNIEnv *env , jclass)
+{
+	return env->NewStringUTF("1900");
+}
+
 void jni_PostCmd
-  (JNIEnv *, jclass, jint cmd)
+  (JNIEnv * env, jclass, jint cmd, jstring arg)
 {
 	LOGI("jni_PostCmd cmd=[%d]\r\n", cmd);
+	char buf[MAX_PATH] = {0};
+	const char* pGet = env->GetStringUTFChars(arg, NULL);
+	if (pGet == NULL)
+	{
+		return;
+	}
+	sprintf(buf, "%s", pGet);
+	LOGI("jni_PostCmd = [%s]\r\n", buf);
+	env->ReleaseStringUTFChars(arg, pGet);
+	if (g_pCConnectMCU != NULL)
+	{
+		g_pCConnectMCU->GetUartInterface()->ProcCmd(cmd, buf);
+	}
 }
 
 jstring GetBlueToothVersion(JNIEnv *env, jclass clz)
@@ -156,7 +202,7 @@ jstring GetBlueToothVersion(JNIEnv *env, jclass clz)
 //	{
 //		CJavaForString(100, "I am from C thread!");
 //	}
-	return env->NewStringUTF(pConnectMCU->GetBlueToothVersion());
+	return env->NewStringUTF(g_pCConnectMCU->GetAppVersion());
 }
 
 /*
@@ -165,8 +211,13 @@ jstring GetBlueToothVersion(JNIEnv *env, jclass clz)
  */
 const JNINativeMethod g_methods[] = {
 		{"HelloBlueTooth", "()V", (void*)HelloBlueTooth},
+		{"looper", "()V", (void*)jni_Looper},
 		{"getStatus", "()I", (void*)jni_GetStatus},
-		{"postCmd", "(I)V", (void*)jni_PostCmd},
+		{"getKeyStat", "()I", (void*)jni_GetKeyStat},
+		{"getLEDStat", "()I", (void*)jni_GetLEDStat},
+		{"getIOStat", "()I", (void*)jni_GetIOStat},
+		{"getVersion", "()Ljava/lang/String;", (void*)jni_GetVersion},
+		{"postCmd", "(ILjava/lang/String;)V", (void*)jni_PostCmd},
 		{"GetBlueToothVersion", "()Ljava/lang/String;", (void*)GetBlueToothVersion}
 };
 
@@ -199,7 +250,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved)
 
 	//注册JNI方法
 	env->RegisterNatives(g_cls_JniClient, g_methods, sizeof(g_methods)/sizeof(g_methods[0]));
-	pConnectMCU = new CConnectMCU();
+	g_pCConnectMCU = new CConnectMCU();
 	TestAp_Printf(UART_DEBUG, "OnLoad Success\r\n");
 	return JNI_VERSION_1_6;
 }
@@ -215,9 +266,9 @@ JNIEXPORT void JNI_ONUnLoad(JavaVM* vm, void* reserved)
 	}
 	env->UnregisterNatives(g_cls_JniClient);
 	env->DeleteWeakGlobalRef(g_cls_JniClient);
-	if (NULL != pConnectMCU)
+	if (NULL != g_pCConnectMCU)
 	{
-		delete pConnectMCU;
-		pConnectMCU = NULL;
+		delete g_pCConnectMCU;
+		g_pCConnectMCU = NULL;
 	}
 }

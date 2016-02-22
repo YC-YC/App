@@ -5,17 +5,11 @@
  *      Author: YC
  */
 
-#ifndef CBLUETOOTH_H_
-#define CBLUETOOTH_H_
-#include "asm/termbits.h"
-#include "CUartCtrl.h"
-#include "UartCom.h"
-
-//#define BLUETOOTH_UART_NAME		"/dev/ttyS3"
-//#define BLUETOOTH_UART_BAUD		B9600
-
-#define BLUETOOTH_UART_NAME		"/dev/ttyS0"
-#define BLUETOOTH_UART_BAUD		B115200
+#ifndef CONNECTMCU_H_
+#define CONNECTMCU_H_
+#include "comdef.h"
+#include "CUartInterfaceLoc.h"
+#include "formData.h"
 
 class CConnectMCU
 {
@@ -23,18 +17,19 @@ public:
 
 	CConnectMCU();
 	~CConnectMCU();
-	UartCom* GetUartCom();
-	const char* GetBlueToothVersion();
+	void Looper();
+	const char* GetAppVersion();
+	CUartInterfaceLoc* GetUartInterface();
+	CFormData* GetFormData();
+	int GetKeyStatus();
+	int GetLEDStatus();
+	int GetIOStatus();
 
 private:
-	void OpenUart();	//打开串口
-	void CloseUart();
-
-private:
-	CUartCtrl* mUart;	//串口通讯
-	UartCom* mUartCom;	//接收处理
+	CFormData* m_pFormData;		//共用数据
+	CUartInterfaceLoc* m_pUartInterface;	//协议处理
 
 };
 
 
-#endif /* ConnectMCU_H_ */
+#endif /* CONNECTMCU_H_ */
