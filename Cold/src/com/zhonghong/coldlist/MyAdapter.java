@@ -75,7 +75,7 @@ public class MyAdapter extends BaseAdapter {
 			
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(mContext, "点击了：" + position, Toast.LENGTH_SHORT).show();
+//				Toast.makeText(mContext, "点击了：" + position, Toast.LENGTH_SHORT).show();
 				try {
 					ClientFaceMode.getInstance().getTaskBinder().removeFromColdList(mListData.get(position).getApkName());
 				} catch (RemoteException e) {

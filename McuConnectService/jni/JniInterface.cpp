@@ -26,7 +26,7 @@ bool JNI_CallJavaIntStringStringMethod
 	clazz = env->FindClass("com.zhonghong.jni.JniClient");
 	if (clazz == NULL)
 	{
-		TestAp_Printf(UART_DEBUG, "FindClass com.example.ndkbase.JavaMethod error");
+		TestAp_Printf(UART_DEBUG, "FindClass com.zhonghong.jni.JniClient error");
 		return false;
 	}
 

@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.zhonghong.commonapp.broadcast.BootBroadcastReceiver" >
+        <receiver android:name="com.zhonghong.cold.boot.BootBroadcastReceiver" >
             <intent-filter android:priority="2147463647" >
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
