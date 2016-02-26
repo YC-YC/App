@@ -51,8 +51,7 @@ obj/local/armeabi/objs/Connection/CConnectMCU.o: jni/CConnectMCU.cpp \
  D:/SWPackage/android-ndk-r9/platforms/android-18/arch-arm/usr/include/android/log.h \
  jni/CUartInterfaceLoc.h \
  D:/SWPackage/android-ndk-r9/platforms/android-18/arch-arm/usr/include/asm/termbits.h \
- jni/CUartCtrl.h jni/UartCom.h jni/formData.h \
- F:\zhonghong\include/debug.h
+ jni/CUartCtrl.h jni/formData.h F:\zhonghong\include/debug.h
 
 jni/CConnectMCU.h:
 
@@ -161,8 +160,6 @@ jni/CUartInterfaceLoc.h:
 D:/SWPackage/android-ndk-r9/platforms/android-18/arch-arm/usr/include/asm/termbits.h:
 
 jni/CUartCtrl.h:
-
-jni/UartCom.h:
 
 jni/formData.h:
 

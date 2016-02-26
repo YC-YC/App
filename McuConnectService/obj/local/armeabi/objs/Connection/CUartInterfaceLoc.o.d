@@ -51,7 +51,7 @@ obj/local/armeabi/objs/Connection/CUartInterfaceLoc.o: \
  D:/SWPackage/android-ndk-r9/platforms/android-18/arch-arm/usr/include/sched.h \
  F:\zhonghong\include/debug.h \
  D:/SWPackage/android-ndk-r9/platforms/android-18/arch-arm/usr/include/android/log.h \
- jni/UartCom.h jni/CConnectMCU.h jni/formData.h
+ jni/CConnectMCU.h jni/formData.h
 
 jni/CUartInterfaceLoc.h:
 
@@ -158,8 +158,6 @@ D:/SWPackage/android-ndk-r9/platforms/android-18/arch-arm/usr/include/sched.h:
 F:\zhonghong\include/debug.h:
 
 D:/SWPackage/android-ndk-r9/platforms/android-18/arch-arm/usr/include/android/log.h:
-
-jni/UartCom.h:
 
 jni/CConnectMCU.h:
 

@@ -45,7 +45,9 @@ public class ColdHelper implements Runnable {
 			"com.aliyun.ushell",
 			"com.mobint.hololauncher",
 			"com.example.zuiserver",
-			"com.android.launcher",
+			"com.android.launcher2",
+			"com.chenli.launcher",
+			"com.chenli.launcher2",
 			"com.chenli.launcher"
 	};
 	//冷藏库变化回调

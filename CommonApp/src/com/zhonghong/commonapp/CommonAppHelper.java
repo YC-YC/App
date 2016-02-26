@@ -46,7 +46,9 @@ public class CommonAppHelper implements Runnable{
 			"com.mobint.hololauncher",
 			"com.example.zuiserver",
 			"com.android.launcher",
+			"com.android.launcher2",
 			"com.chenli.launcher",
+			"com.chenli.launcher2",
 			"com.android.packageinstaller"
 	};
 	

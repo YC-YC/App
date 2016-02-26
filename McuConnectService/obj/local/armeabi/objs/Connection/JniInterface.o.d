@@ -52,7 +52,7 @@ obj/local/armeabi/objs/Connection/JniInterface.o: jni/JniInterface.cpp \
  D:/SWPackage/android-ndk-r9/platforms/android-18/arch-arm/usr/include/android/log.h \
  F:\zhonghong\include/debug.h jni/CConnectMCU.h jni/CUartInterfaceLoc.h \
  D:/SWPackage/android-ndk-r9/platforms/android-18/arch-arm/usr/include/asm/termbits.h \
- jni/CUartCtrl.h jni/UartCom.h jni/formData.h
+ jni/CUartCtrl.h jni/formData.h
 
 D:/SWPackage/android-ndk-r9/platforms/android-18/arch-arm/usr/include/jni.h:
 
@@ -165,7 +165,5 @@ jni/CUartInterfaceLoc.h:
 D:/SWPackage/android-ndk-r9/platforms/android-18/arch-arm/usr/include/asm/termbits.h:
 
 jni/CUartCtrl.h:
-
-jni/UartCom.h:
 
 jni/formData.h:

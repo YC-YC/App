@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="511dp"
+    android:layout_height="408dp"
+    android:background="@drawable/keyboard_bg"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/keyboard_input"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/inputfreq"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:hint="@string/inputfreq_hint"
+            android:text="87.50"
+            android:textColor="@android:color/white"
+            android:textSize="35sp" />
+
+        <Button
+            android:id="@+id/keyboard_del"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/keyboard_del_selector" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/keyboard_1"
+            android:layout_width="170dp"
+            android:layout_height="82dp"
+            android:background="@drawable/keyboard_1_selector" />
+
+        <Button
+            android:id="@+id/keyboard_2"
+            android:layout_width="170dp"
+            android:layout_height="82dp"
+            android:background="@drawable/keyboard_2_selector" />
+
+        <Button
+            android:id="@+id/keyboard_3"
+            android:layout_width="170dp"
+            android:layout_height="82dp"
+            android:background="@drawable/keyboard_3_selector" />
+
+    </LinearLayout>
+     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/keyboard_4"
+            android:layout_width="170dp"
+            android:layout_height="82dp"
+            android:background="@drawable/keyboard_4_selector" />
+
+        <Button
+            android:id="@+id/keyboard_5"
+            android:layout_width="170dp"
+            android:layout_height="82dp"
+            android:background="@drawable/keyboard_5_selector" />
+
+        <Button
+            android:id="@+id/keyboard_6"
+            android:layout_width="170dp"
+            android:layout_height="82dp"
+            android:background="@drawable/keyboard_6_selector" />
+
+    </LinearLayout>
+     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/keyboard_7"
+            android:layout_width="170dp"
+            android:layout_height="82dp"
+            android:background="@drawable/keyboard_7_selector" />
+
+        <Button
+            android:id="@+id/keyboard_8"
+            android:layout_width="170dp"
+            android:layout_height="82dp"
+            android:background="@drawable/keyboard_8_selector" />
+
+        <Button
+            android:id="@+id/keyboard_9"
+            android:layout_width="170dp"
+            android:layout_height="82dp"
+            android:background="@drawable/keyboard_9_selector" />
+
+    </LinearLayout>
+     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/keyboard_cancle"
+            android:layout_width="170dp"
+            android:layout_height="82dp"
+            android:background="@drawable/keyboard_cancle_selector" />
+
+        <Button
+            android:id="@+id/keyboard_0"
+            android:layout_width="170dp"
+            android:layout_height="82dp"
+            android:background="@drawable/keyboard_0_selector" />
+
+        <Button
+            android:id="@+id/keyboard_confirm"
+            android:layout_width="170dp"
+            android:layout_height="82dp"
+            android:background="@drawable/keyboard_confirm_selector" />
+
+    </LinearLayout>
+
+</LinearLayout>
