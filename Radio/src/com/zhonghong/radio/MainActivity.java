@@ -695,16 +695,18 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 	 * ¾²Òô°´¼ü
 	 */
 	private void UiDisplayBtnMute() {
-		if (T.RadioValue.mMute)
+		mMute_bt.setSelected(T.RadioValue.mMute);
+		/*if (T.RadioValue.mMute)
 		{
-			mMute_bt.setBackgroundResource(R.drawable.mute_selector);
-//			mMute_bt.setSelected(true);
+//			mMute_bt.setBackgroundResource(R.drawable.mute_selector);
+			mMute_bt.setSelected(true);
+			
 		}
 		else
 		{
-			mMute_bt.setBackgroundResource(R.drawable.unmute_selector);
-//			mMute_bt.setSelected(false);
-		}
+//			mMute_bt.setBackgroundResource(R.drawable.unmute_selector);
+			mMute_bt.setSelected(false);
+		}*/
 	}
 	
 	private void LOG(String string)
