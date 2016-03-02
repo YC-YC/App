@@ -25,13 +25,20 @@ public class MyAdapter extends BaseAdapter {
 		mInflater = LayoutInflater.from(mContext);
 	}
 	
-	//¸üĞÂÊı¾İ
+	
+	/**
+	 * æ•°æ®å˜åŒ–
+	 * @param list
+	 */
 	public void OnDataChange(List<String> list){
 		this.mListData = list;
 		this.notifyDataSetChanged();
 	}
 	
-	//ÉèÖÃÑ¡ÖĞ
+	/**
+	 * é€‰ä¸­
+	 * @param selItem
+	 */
 	public void setItemSel(int selItem)
 	{
 		if (mSelItem != selItem)
@@ -76,7 +83,12 @@ public class MyAdapter extends BaseAdapter {
 			Typeface typeface = Typeface.createFromFile(file);
 			holder.freq.setTypeface(typeface);
 		}
-		//ÁĞ±íÎÄ×ÖÑ¡ÖĞ×´Ì¬
+		/*Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "digital-7-italic.ttf");
+		if (typeface != null)
+		{
+			holder.freq.setTypeface(typeface);
+		}*/
+		//é€‰ä¸­çš„å­—ä½“é¢œè‰²
 		if (mSelItem == position)
 		{
 			holder.freq.setTextColor(mContext.getResources().getColor(R.color.item_sel));
@@ -85,7 +97,8 @@ public class MyAdapter extends BaseAdapter {
 		{
 			holder.freq.setTextColor(mContext.getResources().getColor(R.color.item_normal));
 		}
-		//ÁĞ±íÑ¡ÖĞ×´Ì¬
+
+		//åˆ—è¡¨é€‰ä¸­
 		if (mSelItem == position)
 		{
 			convertView.setBackgroundResource(R.drawable.freq_list_item_press);

@@ -4,7 +4,7 @@ import com.zhonghong.radio.utils.T;
 
 /**
  * @author YC
- * @time 2016-2-26 ÉÏÎç10:32:59
+ * @time 2016-2-26 ï¿½ï¿½ï¿½ï¿½10:32:59
  */
 public class ChinaProcKey implements AreaProcKey {
 
@@ -35,7 +35,7 @@ public class ChinaProcKey implements AreaProcKey {
 				result = T.KEYBOARD_EFFECTIVE_0;
 				break;
 			default:
-				if (freq > 880 && freq < 1000)
+				if (freq >= 880 && freq < 1000)
 				{
 					result = T.KEYBOARD_EFFECTIVE_05;
 				}
@@ -109,6 +109,7 @@ public class ChinaProcKey implements AreaProcKey {
 			case 1:
 				result = T.KEYBOARD_EFFECTIVE_0;
 				break;
+			case 91:
 			case 101:
 				result = T.KEYBOARD_EFFECTIVE_ALL;
 				break;
@@ -473,7 +474,7 @@ public class ChinaProcKey implements AreaProcKey {
 				result = T.KEYBOARD_EFFECTIVE_05;
 				break;
 			default:
-				if (freq > 880 && freq < 1000)
+				if (freq >= 875 && freq < 1000)
 				{
 					result = T.KEYBOARD_EFFECTIVE_05;
 				}
@@ -548,7 +549,7 @@ public class ChinaProcKey implements AreaProcKey {
 		{
 			switch (freq) {
 			case 96:
-			case 101:
+			case 106:
 				result = T.KEYBOARD_EFFECTIVE_ALL;
 				break;
 			case 1006:
@@ -562,7 +563,7 @@ public class ChinaProcKey implements AreaProcKey {
 				result = T.KEYBOARD_EFFECTIVE_05;
 				break;
 			default:
-				if (freq > 880 && freq < 1000)
+				if (freq >= 875 && freq < 1000)
 				{
 					result = T.KEYBOARD_EFFECTIVE_05;
 				}
@@ -656,7 +657,7 @@ public class ChinaProcKey implements AreaProcKey {
 				result = T.KEYBOARD_EFFECTIVE_05;
 				break;
 			default:
-				if (freq > 880 && freq < 1000)
+				if (freq >= 875 && freq < 1000)
 				{
 					result = T.KEYBOARD_EFFECTIVE_05;
 				}
@@ -748,7 +749,7 @@ public class ChinaProcKey implements AreaProcKey {
 				result = T.KEYBOARD_EFFECTIVE_05;
 				break;
 			default:
-				if (freq > 880 && freq < 1000)
+				if (freq >= 875 && freq < 1000)
 				{
 					result = T.KEYBOARD_EFFECTIVE_05;
 				}
@@ -835,7 +836,7 @@ public class ChinaProcKey implements AreaProcKey {
 				result = T.KEYBOARD_EFFECTIVE_05;
 				break;
 			default:
-				if (freq > 880 && freq < 1000)
+				if (freq >= 875 && freq < 1000)
 				{
 					result = T.KEYBOARD_EFFECTIVE_05;
 				}
@@ -1049,6 +1050,10 @@ public class ChinaProcKey implements AreaProcKey {
 			{
 				result = freq*10;
 			}
+		}
+		else
+		{
+			result = freq;
 		}
 		return result;
 	}

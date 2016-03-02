@@ -30,7 +30,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="40dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal" >
 
@@ -65,18 +65,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="50dp"
-                    android:background="@drawable/oo_sel" />
+                    android:background="@drawable/stind_sel" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="50dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal" >
 
                 <Button
-                    android:id="@+id/bt_left"
+                    android:id="@+id/btn_left"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="50dp"
@@ -110,12 +110,20 @@
                     android:background="@drawable/mhz" />
 
                 <Button
-                    android:id="@+id/bt_right"
+                    android:id="@+id/btn_right"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="50dp"
                     android:background="@drawable/right_selector" />
             </LinearLayout>
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="doClick"
+                android:text="返回" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -150,7 +158,7 @@
                 android:padding="0dp" >
 
                 <Button
-                    android:id="@+id/bt_mute"
+                    android:id="@+id/btn_mute"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/mute_selector" />
@@ -172,7 +180,7 @@
                 android:padding="0dp" >
 
                 <Button
-                    android:id="@+id/bt_band"
+                    android:id="@+id/btn_band"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/band_selector"/>
@@ -194,7 +202,7 @@
                 android:padding="0dp" >
 
                 <Button
-                    android:id="@+id/bt_search"
+                    android:id="@+id/btn_search"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/search_selector" />
@@ -216,7 +224,7 @@
                 android:padding="0dp" >
 
                 <Button
-                    android:id="@+id/bt_keyboard"
+                    android:id="@+id/btn_keyboard"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/keyboard_selector" />
@@ -238,7 +246,7 @@
                 android:padding="0dp" >
 
                 <Button
-                    android:id="@+id/bt_loc"
+                    android:id="@+id/btn_loc"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/loc_selector" />
@@ -259,7 +267,7 @@
                 android:padding="0dp" >
 
                 <Button
-                    android:id="@+id/bt_scan"
+                    android:id="@+id/btn_scan"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/scan_selector" />

@@ -6,14 +6,14 @@ import android.content.SharedPreferences.Editor;
 
 /**
  * @author YC
- * @time 2016-2-25 ÏÂÎç3:01:44
+ * @time 2016-2-25 ï¿½ï¿½ï¿½ï¿½3:01:44
  */
 public class RadioDataUtils {
 
 	
 	
 	/**
-	 * »ñÈ¡´æ´¢µÄÊÕÒô»úĞÅÏ¢
+	 * ä»é…ç½®æ–‡ä»¶ä¸­è·å–æ•°æ®
 	 */
 	public static void getRadioAllInfo(Context context) {
 		SharedPreferences pref = context.getSharedPreferences(T.RADIO_INFO_FILE, Context.MODE_PRIVATE);
@@ -24,7 +24,7 @@ public class RadioDataUtils {
 		T.RadioValue.mFMFreqList.clear();
 		T.RadioValue.mAMFreqList.clear();
 		
-		if (FMsize > 0 && AMsize > 0)//ÓĞÊı¾İ
+		if (FMsize > 0 && AMsize > 0)//æ•°æ®éƒ½ä¸ä¸º0æ—¶æ‰æœ‰æ•ˆ
 		{
 			T.RadioValue.mBand = pref.getInt(T.RADIO_INFO_KEY_BAND, T.FM_1);
 
@@ -51,7 +51,7 @@ public class RadioDataUtils {
 	}
 	
 	/**
-	 * Ä¬ÈÏÖµ
+	 *è®¾ç½®é»˜è®¤é…ç½®ä¿¡æ¯
 	 */
 	private static void setDefaultRadioInfo() {
 		
@@ -78,7 +78,7 @@ public class RadioDataUtils {
 	
 
 	/**
-	 * ±£´æÊÕÒô»úĞÅÏ¢
+	 * ä¿å­˜æ•°æ®åˆ°é…ç½®æ–‡ä»¶
 	 */
 	public static void saveRadioAllInfo(Context context) {
 		SharedPreferences pref = context.getSharedPreferences(T.RADIO_INFO_FILE, Context.MODE_PRIVATE);

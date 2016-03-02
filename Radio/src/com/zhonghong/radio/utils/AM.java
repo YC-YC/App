@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * @author YC
- * @time 2016-2-23 下午6:29:12
+ * @time 2016-2-23 锟斤拷锟斤拷6:29:12
  */
 public class AM implements RadioInterface{
 
@@ -86,14 +86,38 @@ public class AM implements RadioInterface{
 
 	@Override
 	public void saveListItemFreq(int item, int freq) {
-		T.RadioValue.mAMSelItem = item;
-		T.RadioValue.mAMFreqList.set(item, freq);
+		if (item >= T.RadioValue.mAMFreqList.size())
+		{
+			T.RadioValue.mAMFreqList.add(freq);
+			T.RadioValue.mAMSelItem = item;
+		}
+		else
+		{
+			T.RadioValue.mAMSelItem = item;
+			T.RadioValue.mAMFreqList.set(item, freq);
+		}
 	}
 
 	@Override
 	public int getFreqForStep(boolean bAdd) {
-		// TODO 自动生成的方法存根
-		return 0;
+		int freq = T.RadioValue.mCurAMFreq;
+		if (bAdd)
+		{
+			freq += T.RadioValue.mAMStep;
+			if (freq > T.RadioValue.mMaxAMFreq)
+			{
+				freq = T.RadioValue.mMinAMFreq;
+			}
+		}
+		else
+		{
+			freq -= T.RadioValue.mAMStep;
+			if (freq < T.RadioValue.mMinAMFreq)
+			{
+				freq = T.RadioValue.mMaxAMFreq;
+			}
+		}
+		return freq;
 	}
 
 	@Override
@@ -108,6 +132,22 @@ public class AM implements RadioInterface{
 	@Override
 	public int getFreqListNum() {
 		return T.RadioValue.mAMFreqList.size();
+	}
+
+	@Override
+	public void setDefaultFreq() {
+		T.RadioValue.mAMFreqList.clear();
+		
+		T.RadioValue.mAMFreqList.add(522);
+		T.RadioValue.mAMFreqList.add(603);
+		T.RadioValue.mAMFreqList.add(999);
+		T.RadioValue.mAMFreqList.add(1404);
+		T.RadioValue.mAMFreqList.add(1620);
+		T.RadioValue.mAMFreqList.add(522);
+		T.RadioValue.mAMSelItem = -1;		
+		
+		T.RadioValue.mCurAMFreq = 522;
+		T.RadioValue.mBand = T.AM_1;
 	}
 
 }

@@ -4,23 +4,91 @@ import java.util.List;
 
 /**
  * @author YC
- * @time 2016-2-23 ÏÂÎç6:23:06
+ * @time 2016-2-23 18:23:06
  */
 public interface RadioInterface {
-	int getMinFreq();
-	int getMaxFreq();
-	int getCurFreq();
-	String getDisplayFreq(int freq);	//½«×ª»»³ÉÏÔÊ¾µÄ×Ö·û´®
-	void setCurFreq(int freq);
-	int getFreqStep();
-	int getSeekbarMax();
-	List<String> getFreqList();
-	int getFreqListNum();
-	int getListSelItem();
-	void selListItemFreq(int item);	//Ñ¡ÔñÁĞ±íÏî²¢¸ßÁÁ,-1ÎªÈ¡Ïû¸ßÁÁ
-	void saveListItemFreq(int item, int freq);	//±£´æµ±Ç°ÆµÂÊµ½ÁĞ±í
 	
-	int getFreqForStep(boolean bAdd);	//²½½øÉú³ÉĞÂÆµÂÊ£¬bAddÎªtrueÇ°½ø£¬falseºóÍË
-	void setFreq(int freq);	//ÉèÖÃÆµÂÊ
+	/**
+	 * @return æœ€å°é¢‘ç‡
+	 */
+	int getMinFreq();
+	
+	/**
+	 * @return æœ€å¤§é¢‘ç‡
+	 */
+	int getMaxFreq();
+	
+	/**
+	 * @return å½“å‰é¢‘ç‡
+	 */
+	int getCurFreq();
+	/**
+	 * è½¬æ¢æˆç”¨äºæ˜¾ç¤ºçš„é¢‘ç‡
+	 */
+	String getDisplayFreq(int freq);
+	
+	/**
+	 * @param freq è®¾ç½®å½“å‰é¢‘ç‡
+	 */
+	void setCurFreq(int freq);
+	
+	/**
+	 * @return æ­¥è¿›
+	 */
+	int getFreqStep();
+	
+	/**
+	 * @return Seekbarçš„å€¼
+	 */
+	int getSeekbarMax();
+	
+	/**
+	 * @return é¢‘ç‡åˆ—è¡¨
+	 */
+	List<String> getFreqList();
+	
+	/**
+	 * @return åˆ—è¡¨ä¸ªæ•°
+	 */
+	int getFreqListNum();
+	
+	/**
+	 * @return è·å–åˆ—è¡¨é€‰ä¸­é¡¹
+	 */
+	int getListSelItem();
+	
+	/**
+	 * @param item é€‰ä¸­åˆ—è¡¨é¡¹ï¼Œ-1è¡¨ç¤ºæ¸…é™¤é€‰ä¸­
+	 */
+	void selListItemFreq(int item);
+	
+	/**
+	 * ä¸ºListViewæŒ‡å®šé¡¹æ·»åŠ é¢‘ç‡
+	 * @param item
+	 * @param freq
+	 */
+	void saveListItemFreq(int item, int freq);
+	
+	/**
+	 * è·å–æ­¥è¿›
+	 * @param bAdd true = å¢åŠ , false = å‡å°
+	 * @return
+	 */
+	int getFreqForStep(boolean bAdd);
+	
+	/**
+	 * @param freq è®¾ç½®åº”ç”¨é¢‘ç‡ï¼Œå¦‚æœè¦è®¾åˆ°MCUéœ€è¦è°ƒç”¨å¦å¤–æ¥å£
+	 */
+	void setFreq(int freq);
+	
+	/**
+	 * @return æ˜¯å¦æ˜¯FMæ³¢æ®µ
+	 */
 	boolean isFM();
+	
+
+	/**
+	 * è®¾ç½®é»˜è®¤é¢‘ç‡
+	 */
+	void setDefaultFreq();
 }

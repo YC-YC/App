@@ -6,24 +6,19 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -33,6 +28,9 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.zhonghong.mcuservice.RadioInfo;
+import android.zhonghong.mcuservice.RadioProxy;
+import android.zhonghong.mcuservice.RegistManager.IRadioInfoChangedListener;
 
 import com.zhonghong.radio.dialog.KeyboardDialog;
 import com.zhonghong.radio.dialog.KeyboardDialog.OnClickCancleListener;
@@ -54,25 +52,26 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 	private Handler mHandler = new Handler();
 	
 	private RadioInterface mRadio;
-	private List<String> mListData = new ArrayList<String>();	//ÁĞ±íÊı¾İ
+	private List<String> mListData = new ArrayList<String>();
 	private MyAdapter mAdapter;
 	
+	private RadioProxy mRadioProxy ;
+	
 	//Ui Components
-	private SeekBar mFreqSeekBar;
-	private TextView mCurFreq_tv;
-	private ImageView mBand_img, mLOC_img, mST_img, mOO_img;
-	private ImageView mUnit_img;
-	private Button mMute_bt, mBand_bt, mSearch_bt, mKeyboard_bt, mScan_bt, mLOC_bt;
-	private Button mLeft_bt, mRight_bt;
-	private ListView mFreqList;
+	private SeekBar mSeekBarFreq;
+	private TextView mTvCurFreq;
+	private ImageView mImgBand, mImgLoc, mImgSt, mImgStInd, mImgUnit;
+	private Button mBtnMute, mBtnBand, mBtnSearch, mBtnKeyboard, mBtnScan, mBtnLoc;
+	private Button mBtnLeft, mBtnRight;
+	private ListView mLvFreq;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setTheme(R.style.Transparent);	//Í¸Ã÷±³¾°
+		setTheme(R.style.Transparent);	//è®¾ç½®ä¸»é¢˜
 		setContentView(R.layout.activity_main);
-		
 		RadioDataUtils.getRadioAllInfo(this);
+		getRadioInfoFreqJar();
 //		RadioDataUtils.saveRadioAllInfo(this);
 		if (isCurBandFM())
 		{
@@ -83,7 +82,7 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 			mRadio = new AM();
 		}
 		initView();
-
+		setFreqToMcu(mRadio.getCurFreq());
 	}
 
 	@Override
@@ -92,12 +91,36 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 		setListViewSelection();
 	}
 	
+	public void doClick(View v)
+	{
+//		finish();
+		backToHome(); 
+	}
+
+	/**
+	 * è¿”å›åˆ°ä¸»ç•Œé¢ï¼ˆLauncherç›‘å¬ï¼‰
+	 */
+	private void backToHome() {
+		Intent i= new Intent(Intent.ACTION_MAIN);
+	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	    i.addCategory(Intent.CATEGORY_HOME);
+	    startActivity(i);
+	}
+	
 	@Override
 	protected void onDestroy() {
 		RadioDataUtils.saveRadioAllInfo(this);
+		mRadioProxy.unregistRadioInfoChangedListener(mRadioInfoChangedListener);
 		super.onDestroy();
 	}
 	
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+	}
+
+
 	//Event
 	private OnItemClickListener mItemClickListener = new OnItemClickListener() {
 		@Override
@@ -107,10 +130,10 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 			{
 				stopScan();
 			}
-			mRadio.selListItemFreq(position);
-			mAdapter.setItemSel(position);
+			setListSelItem(position);
 			UiDisplayTvCurFreq();
-			setSeekBarValue();
+			UiDisplaySeekBarFreq();
+			setFreqToMcu(mRadio.getCurFreq());
 		}
 		
 	};
@@ -125,7 +148,7 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 			}
 			mRadio.saveListItemFreq(position, mRadio.getCurFreq());
 			mAdapter.setItemSel(position);
-			refleshListView();
+			refleshListViewData();
 			return true;
 		}
 	};
@@ -136,20 +159,20 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 		public boolean onTouch(View v, MotionEvent event) {
 
 			switch (v.getId()) {
-			case R.id.bt_left:
-				if (event.getAction() == MotionEvent.ACTION_UP)//ËÉ¿ª
+			case R.id.btn_left:
+				if (event.getAction() == MotionEvent.ACTION_UP)//æ¾å¼€
 				{
 					if (T.mStepMode)
 					{
-						LOG("°´¼üËÉ¿ª");
+						LOG("é•¿æŒ‰æ¾å¼€");
 						mHandler.removeCallbacks(mDecreaseRunnable);
 						mHandler.removeCallbacks(mStepModeRunnable);
 						mHandler.postDelayed(mStepModeRunnable, T.STEP_MODE_TIME);
 					}
 				}
 				break;
-			case R.id.bt_right:
-				if (event.getAction() == MotionEvent.ACTION_UP)//ËÉ¿ª
+			case R.id.btn_right:
+				if (event.getAction() == MotionEvent.ACTION_UP)//æ¾å¼€
 				{
 					
 				}
@@ -161,19 +184,18 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 	};
 	
 	/**
-	 * ²½½ø´¦Àí
+	 * æ­¥è¿›å¤„ç†,3Sæ²¡æŒ‰ä¸‹å–æ¶ˆæ­¥è¿›æ¨¡å¼
 	 */
 	private Runnable mStepModeRunnable = new Runnable() {
 		
 		@Override
 		public void run() {
 			T.mStepMode = false;
-			LOG("T.mStepMode = false");
 		}
 	};
 	
 	/**
-	 * ä¯ÀÀ´¦Àí
+	 * æ‰«æå¤„ç†
 	 */
 	private Runnable mScanModeRunnable = new Runnable() {
 		
@@ -183,14 +205,13 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 			
 			if (nowTime - T.mStartScanItemTime > T.SCAN_MODE_TIME)
 			{
-				if (T.mScanItem >= mRadio.getFreqListNum()-1)//×îºóÒ»Ïî
+				if (T.mScanItem >= mRadio.getFreqListNum()-1)//æœ€åä¸€é¡¹
 				{
 					T.mScanMode = false;
-					mRadio.selListItemFreq(0);
-					mAdapter.setItemSel(0);
+					setListSelItem(0);
 					UiDisplayTvCurFreq();
 				}
-				else//ÏÂÒ»Ïî
+				else//ä¸‹ä¸€é¡¹
 				{
 					T.mScanItem++;
 					startScanItem(T.mScanItem);
@@ -201,13 +222,11 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 				T.mScanItemSel = !T.mScanItemSel;
 				if (T.mScanItemSel)
 				{
-					mRadio.selListItemFreq(T.mScanItem);
-					mAdapter.setItemSel(T.mScanItem);
+					setListSelItem(T.mScanItem);
 				}
 				else
 				{
-					mRadio.selListItemFreq(-1);
-					mAdapter.setItemSel(-1);
+					setListSelItem(-1);
 				}
 				mHandler.postDelayed(this, T.SCAN_MODE_DIFF);
 			}
@@ -217,7 +236,7 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 	
 	
 	/**
-	 * Ôö¼Ó
+	 * é•¿æŒ‰å¢åŠ 
 	 */
 	private Runnable mIncreaseRunnable = new Runnable() {
 		
@@ -225,82 +244,202 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 		public void run() {
 			mRadio.setCurFreq(mRadio.getFreqForStep(true));
 			UiDisplayTvCurFreq();
+			setFreqToMcu(mRadio.getCurFreq());
 			mHandler.postDelayed(this, T.STEP_MODE_DIFF);
 		}
 	};
 	
-	//¼õÉÙ
+	/**
+	 * é•¿æŒ‰å‡å°
+	 */
 	private Runnable mDecreaseRunnable = new Runnable() {
 		
 		@Override
 		public void run() {
-			mRadio.setCurFreq(mRadio.getFreqForStep(false));
-			UiDisplayTvCurFreq();
-			mHandler.postDelayed(this, T.STEP_MODE_DIFF);
+			if (T.mStepMode)
+			{
+				LOG("DecreaseRunnable run");
+				mRadio.setCurFreq(mRadio.getFreqForStep(false));
+				UiDisplayTvCurFreq();
+				setFreqToMcu(mRadio.getCurFreq());
+				mHandler.postDelayed(this, T.STEP_MODE_DIFF);
+			}
 		}
 	};
-	
 
-
+	private IRadioInfoChangedListener mRadioInfoChangedListener = new IRadioInfoChangedListener() {
+		
+		@Override
+		public void notify(int[] arg0, final RadioInfo info) {
+			mHandler.post(new Runnable() {
+				
+				@Override
+				public void run() {
+					//loc
+					if (info.isLoc() != T.RadioValue.mLoc)
+					{
+						T.RadioValue.mLoc = info.isLoc();
+						UiDisplayImgLoc();
+					}
+					//ST
+					if (info.isSt() != T.RadioValue.mSt)
+					{
+						T.RadioValue.mSt = info.isSt();
+						UiDisplayImgSt();
+					}
+					//StInd
+					if (info.isStInd() != T.RadioValue.mStInd)
+					{
+						T.RadioValue.mStInd = info.isStInd();
+						UiDisplayImgStInd();
+					}
+					//Search
+					/*T.RadioValue.mSearch = info.isSearch();
+					if (T.RadioValue.mSearch)
+					{
+						mRadio.setFreq(info.getFreq());
+						UiDisplayTvCurFreq();
+						LOG("Search info.isHasLegalFreq() = " + info.isHasLegalFreq());
+						if (info.isHasLegalFreq())
+						{
+							addOneItem(T.mSearchHadFreqNum, info.getLegalFreq(), true);
+							T.mSearchHadFreqNum++;
+							LOG("Search have freqNum = " + T.mSearchHadFreqNum + ", freq = " + info.getLegalFreq());
+						}
+					}*/
+					
+					LOG("info.isSearch() = " + info.isSearch());
+					if (info.isSearch())
+					{
+						if (!T.RadioValue.mSearch)//å¼€å§‹æœå°
+						{
+							if (T.mSearchReq)
+							{
+								mRadio.setDefaultFreq();
+								refleshListViewData();
+								setListSelItem(mRadio.getListSelItem());
+								setListViewSelection();
+								UiDisplayTvCurFreq();
+								UiDisplayImgBand();
+							}
+						}
+						if (T.mEnableReceiveFreq)
+						{
+							mRadio.setFreq(info.getFreq());
+							UiDisplayTvCurFreq();
+						}
+//						LOG("Search info.isHasLegalFreq() = " + info.isHasLegalFreq());
+						if (info.isHasLegalFreq())
+						{
+							addOneItem(T.mSearchHadFreqNum, info.getLegalFreq(), true);
+							T.mSearchHadFreqNum++;
+							LOG("Search have freqNum = " + T.mSearchHadFreqNum + ", freq = " + info.getLegalFreq());
+						}
+						
+						/*{
+							addOneItem(T.mSearchHadFreqNum, mRadio.getCurFreq(), true);
+							T.mSearchHadFreqNum++;
+							LOG("Search have freqNum = " + T.mSearchHadFreqNum + ", freq = " + info.getLegalFreq());
+						}*/
+					}
+					else	
+					{
+//						LOG("Search T.RadioValue.mSearch = " + T.RadioValue.mSearch);
+						if (T.RadioValue.mSearch)//æœç´¢åœæ­¢
+						{
+							if (T.mSearchReq)
+							{
+								LOG("Search Auto Stop");
+								T.mSearchReq = false;
+								T.mSearchHadFreqNum = 0;
+								T.mSearchHadFreq = 0;
+								setListSelItem(0);
+								setListViewSelection();
+								UiDisplayTvCurFreq();
+								setFreqToMcu(mRadio.getCurFreq());
+							}
+						}
+					}
+					T.RadioValue.mSearch = info.isSearch();
+				}
+			});
+		}
+	}; 
 	
+	/**
+	 * ä»JaråŒ…è·å–æ•°æ®
+	 */
+	private void getRadioInfoFreqJar() {
+		mRadioProxy	= new RadioProxy();	
+		LOG("get RadioProxy is " + mRadioProxy.toString());
+		RadioInfo radioInfo = mRadioProxy.getRadioInfo();
+//		mRadioProxy.setFreq(band, freq);
+		T.RadioValue.mLoc = radioInfo.isLoc();
+		T.RadioValue.mSt = radioInfo.isSt();
+		T.RadioValue.mStInd = radioInfo.isStInd();
+		T.RadioValue.mSearch = radioInfo.isSearch();
+		LOG("get RadioInfo = " + mRadioProxy.getRadioInfo().toString());
+		mRadioProxy.registRadioInfoChangedListener(mRadioInfoChangedListener);
+	}
 	
-
-	//²éÕÒ¿Ø¼şºÍ³õÊ¼»¯ÊÂ¼ş
+	/**
+	 * åˆå§‹åŒ–ç»„ä»¶
+	 */
 	private void initView() {
-			mFreqSeekBar = (SeekBar) findViewById(R.id.seekBar_freq);
-			mFreqSeekBar.setOnSeekBarChangeListener(this);
+			mSeekBarFreq = (SeekBar) findViewById(R.id.seekBar_freq);
+			mSeekBarFreq.setOnSeekBarChangeListener(this);
 			
-			mCurFreq_tv = (TextView) findViewById(R.id.tv_curFreq);
+			mTvCurFreq = (TextView) findViewById(R.id.tv_curFreq);
 			
-			mBand_img = (ImageView) findViewById(R.id.img_band);
+			mImgBand = (ImageView) findViewById(R.id.img_band);
 			
-			mUnit_img = (ImageView) findViewById(R.id.img_unit);
-			mLOC_img = (ImageView) findViewById(R.id.img_loc);
-			mST_img = (ImageView) findViewById(R.id.img_st);
-			mOO_img = (ImageView) findViewById(R.id.img_oo);
+			mImgUnit = (ImageView) findViewById(R.id.img_unit);
+			mImgLoc = (ImageView) findViewById(R.id.img_loc);
+			mImgSt = (ImageView) findViewById(R.id.img_st);
+			mImgStInd = (ImageView) findViewById(R.id.img_oo);
 			
-			mMute_bt = (Button) findViewById(R.id.bt_mute);
-			mMute_bt.setOnClickListener(this);
+			mBtnMute = (Button) findViewById(R.id.btn_mute);
+			mBtnMute.setOnClickListener(this);
 			
-			mBand_bt = (Button) findViewById(R.id.bt_band);
-			mBand_bt.setOnClickListener(this);
+			mBtnBand = (Button) findViewById(R.id.btn_band);
+			mBtnBand.setOnClickListener(this);
 			
-			mSearch_bt = (Button) findViewById(R.id.bt_search);
-			mSearch_bt.setOnClickListener(this);
+			mBtnSearch = (Button) findViewById(R.id.btn_search);
+			mBtnSearch.setOnClickListener(this);
 			
-			mKeyboard_bt = (Button) findViewById(R.id.bt_keyboard);
-			mKeyboard_bt.setOnClickListener(this);
+			mBtnKeyboard = (Button) findViewById(R.id.btn_keyboard);
+			mBtnKeyboard.setOnClickListener(this);
 			
-			mScan_bt = (Button) findViewById(R.id.bt_scan);
-			mScan_bt.setOnClickListener(this);
+			mBtnScan = (Button) findViewById(R.id.btn_scan);
+			mBtnScan.setOnClickListener(this);
 			
-			mLOC_bt = (Button) findViewById(R.id.bt_loc);
-			mLOC_bt.setOnClickListener(this);
+			mBtnLoc = (Button) findViewById(R.id.btn_loc);
+			mBtnLoc.setOnClickListener(this);
 			
-			mLeft_bt = (Button) findViewById(R.id.bt_left);
-			mLeft_bt.setOnClickListener(this);
-			mLeft_bt.setOnLongClickListener(this);
-			mLeft_bt.setOnTouchListener(mTouchListener);
+			mBtnLeft = (Button) findViewById(R.id.btn_left);
+			mBtnLeft.setOnClickListener(this);
+			mBtnLeft.setOnLongClickListener(this);
+			mBtnLeft.setOnTouchListener(mTouchListener);
 			
-			mRight_bt = (Button) findViewById(R.id.bt_right);
-			mRight_bt.setOnClickListener(this);
-			mRight_bt.setOnLongClickListener(this);
-			mRight_bt.setOnTouchListener(mTouchListener);
+			mBtnRight = (Button) findViewById(R.id.btn_right);
+			mBtnRight.setOnClickListener(this);
+			mBtnRight.setOnLongClickListener(this);
+			mBtnRight.setOnTouchListener(mTouchListener);
 			
-			mFreqList = (ListView) findViewById(R.id.freq_listView);
+			mLvFreq = (ListView) findViewById(R.id.freq_listView);
 			
 			RefreshView();
 		}
 
 	/**
-	 * É¨ÃèÊ±²»ÖĞ¶ÏµÄ°´¼ü
+	 *
 	 */
 	private boolean isScanUndoKey(int keyId)
 	{
 		switch (keyId) {
-		case R.id.bt_mute:
-		case R.id.bt_scan:
-		case R.id.bt_loc:
+		case R.id.btn_mute:
+		case R.id.btn_scan:
+		case R.id.btn_loc:
 			return true;
 		}
 		return false;
@@ -308,103 +447,86 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 	
 	@Override
 	public void onClick(View v) {
-		// TODO onClick°´¼üÏûÏ¢
-		if (T.mScanMode && !isScanUndoKey(v.getId()))
+		// TODO onClickå¤„ç†
+		/*if (T.mScanMode && !isScanUndoKey(v.getId()))
 		{
 			stopScan();
-		}
+		}*/
 		switch (v.getId()) {
-		case R.id.bt_mute:
-			T.RadioValue.mMute = !T.RadioValue.mMute;
-			UiDisplayBtnMute();
+		case R.id.btn_mute:
+			toggleMute();
 			break;
-		case R.id.bt_band:	//ÇĞ²¨¶Î
-			changeToOtherBand();
+		case R.id.btn_band:	//Band
+			toggleBand();
 			break;
-		case R.id.bt_search:	//ËÑË÷
-//			getListViewNum();
-			break;
-		case R.id.bt_keyboard:	//¼üÅÌ
+		case R.id.btn_keyboard:	//é”®ç›˜
 			showKeyboardDialog();
 			break;
-		case R.id.bt_loc:	//Ô¶½ü³Ì
-			toggleLOC();
+		case R.id.btn_search:	//æœç´¢
+//			addOneItem(mRadio.getFreqListNum(), 8750, true);
+			procSearch();
 			break;
-		case R.id.bt_scan:	//ä¯ÀÀ
+		case R.id.btn_loc:	//è¿œç¨‹ç¨‹
+			procLoc();
+			break;
+		case R.id.btn_scan:	//æµè§ˆ
 			procScan();
 			break;
-		case R.id.bt_left:	//¶Ì°´×ó
+		case R.id.btn_left:	//å·¦ã€ä¸Š
 			procPre();
+//			procPreCh();
 			break;
-		case R.id.bt_right:	//¶Ì°´ÓÒ
+		case R.id.btn_right:	//å³ã€ä¸‹
 			procNext();
+//			procNextCh();
 			break;
 		}
-	}
-
-	
-
-	private void showKeyboardDialog() {
-		KeyboardDialog keyboardDialog = new KeyboardDialog(this, mRadio);
-		Window dialogWindow = keyboardDialog.getWindow();
-//		WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-		dialogWindow.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.RIGHT);
-		/*
-		* lp.xÓëlp.y±íÊ¾Ïà¶ÔÓÚÔ­Ê¼Î»ÖÃµÄÆ«ÒÆ.
-		* µ±²ÎÊıÖµ°üº¬Gravity.LEFTÊ±,¶Ô»°¿ò³öÏÖÔÚ×ó±ß,ËùÒÔlp.x¾Í±íÊ¾Ïà¶Ô×ó±ßµÄÆ«ÒÆ,¸ºÖµºöÂÔ.
-		* µ±²ÎÊıÖµ°üº¬Gravity.RIGHTÊ±,¶Ô»°¿ò³öÏÖÔÚÓÒ±ß,ËùÒÔlp.x¾Í±íÊ¾Ïà¶ÔÓÒ±ßµÄÆ«ÒÆ,¸ºÖµºöÂÔ.
-		* µ±²ÎÊıÖµ°üº¬Gravity.TOPÊ±,¶Ô»°¿ò³öÏÖÔÚÉÏ±ß,ËùÒÔlp.y¾Í±íÊ¾Ïà¶ÔÉÏ±ßµÄÆ«ÒÆ,¸ºÖµºöÂÔ.
-		* µ±²ÎÊıÖµ°üº¬Gravity.BOTTOMÊ±,¶Ô»°¿ò³öÏÖÔÚÏÂ±ß,ËùÒÔlp.y¾Í±íÊ¾Ïà¶ÔÏÂ±ßµÄÆ«ÒÆ,¸ºÖµºöÂÔ.
-		* µ±²ÎÊıÖµ°üº¬Gravity.CENTER_HORIZONTALÊ±
-		* ,¶Ô»°¿òË®Æ½¾ÓÖĞ,ËùÒÔlp.x¾Í±íÊ¾ÔÚË®Æ½¾ÓÖĞµÄÎ»ÖÃÒÆ¶¯lp.xÏñËØ,ÕıÖµÏòÓÒÒÆ¶¯,¸ºÖµÏò×óÒÆ¶¯.
-		* µ±²ÎÊıÖµ°üº¬Gravity.CENTER_VERTICALÊ±
-		* ,¶Ô»°¿ò´¹Ö±¾ÓÖĞ,ËùÒÔlp.y¾Í±íÊ¾ÔÚ´¹Ö±¾ÓÖĞµÄÎ»ÖÃÒÆ¶¯lp.yÏñËØ,ÕıÖµÏòÓÒÒÆ¶¯,¸ºÖµÏò×óÒÆ¶¯.
-		* gravityµÄÄ¬ÈÏÖµÎªGravity.CENTER,¼´Gravity.CENTER_HORIZONTAL |
-		* Gravity.CENTER_VERTICAL.
-		* 
-		*/
-//		lp.x = 100; // ĞÂÎ»ÖÃX×ø±ê
-//		lp.y = 100; // ĞÂÎ»ÖÃY×ø±ê
-//		lp.width = 300; // ¿í¶È
-//		lp.height = 300; // ¸ß¶È
-//		lp.alpha = 0.7f; // Í¸Ã÷¶È
-//		dialogWindow.setAttributes(lp);
-		keyboardDialog.setOnClickCancleListener(new OnClickCancleListener() {
-			
-			@Override
-			public void onCancle(Dialog dialog) {
-				dialog.dismiss();
-			}
-		});
-		keyboardDialog.setOnClickConfirmListener(new OnClickConfirmListener() {
-			
-			@Override
-			public void onConfirm(Dialog dialog, int freq) {
-				mRadio.setFreq(freq);
-				UiDisplayTvCurFreq();
-				dialog.dismiss();
-			}
-		});
-		keyboardDialog.show();
 	}
 
 	@Override
 	public boolean onLongClick(View v) {
 		switch (v.getId()) {
-		case R.id.bt_left:	//³¤°´×ó
+		case R.id.btn_left:	//é•¿æŒ‰å·¦ã€ä¸Š
 			procPreLong();
 			break;
-		case R.id.bt_right:	//³¤°´ÓÒ
+		case R.id.btn_right: //é•¿æŒ‰å³ã€ä¸‹
 			procNextLong();
 			break;
 		}
 		return false;
 	}
+
+	/**
+	 * @param position æ’å…¥ä½ç½®
+	 * @param freq æ·»åŠ é¢‘ç‡
+	 * @param bSel æ˜¯å¦é€‰ä¸­
+	 */
+	private void addOneItem(int position, int freq, boolean bSel) {
+		mRadio.saveListItemFreq(position, freq);
+		refleshListViewData();
+		if (bSel)
+		{
+//			mAdapter.setItemSel(position);
+			setListSelItem(position);
+			setListViewSelection();
+		}
+	}
+
+	private void toggleMute() {
+		T.RadioValue.mMute = !T.RadioValue.mMute;
+		UiDisplayBtnMute();
+	}
+
 	
 	/**
-	 * ÇĞ²¨¶Î
+	 * åˆ‡æ¢Band
 	 */
-	private void changeToOtherBand() {
+	private void toggleBand() {
+		if (T.mScanMode)
+		{
+			stopScan();
+			setListSelItem(T.mScanItem);
+		}
 		if (isCurBandFM())
 		{
 			T.RadioValue.mBand = T.AM_1;
@@ -418,18 +540,32 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 		RefreshView();
 		mAdapter.setItemSel(mRadio.getListSelItem());
 		setListViewSelection();
+		setFreqToMcu(mRadio.getCurFreq());
 	}
 
 	/**
-	 * ¶¨Î»µ½ÁĞ±íÏî
+	 * position ListView
+	 * å®šä½åˆ—è¡¨
 	 */
 	private void setListViewSelection() {
 		int position = mRadio.getListSelItem();
+		
 		if (position < T.LIST_COUNT)
 		{
 			position = 0;
 		}
-		mFreqList.setSelection(position);
+		else
+		{
+			position = position - T.LIST_COUNT + 1;
+		}
+		final int postPosition = position;
+		mHandler.post(new Runnable() {
+			//é€šè¿‡Postè§£å†³setSelectionæ— ä½œç”¨é—®é¢˜
+			@Override
+			public void run() {
+				mLvFreq.setSelection(postPosition);
+			}
+		});
 	}
 
 	
@@ -452,14 +588,119 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 	}*/
 	
 	/**
-	 * ä¯ÀÀµçÌ¨
+	 * æ˜¾ç¤ºé”®ç›˜
+	 */
+	private void showKeyboardDialog() {
+		KeyboardDialog keyboardDialog = new KeyboardDialog(this, mRadio);
+		Window dialogWindow = keyboardDialog.getWindow();
+//		WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+		dialogWindow.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.RIGHT);
+		/*
+		* lp.xä¸lp.yè¡¨ç¤ºç›¸å¯¹äºåŸå§‹ä½ç½®çš„åç§».
+		* å½“å‚æ•°å€¼åŒ…å«Gravity.LEFTæ—¶,å¯¹è¯æ¡†å‡ºç°åœ¨å·¦è¾¹,æ‰€ä»¥lp.xå°±è¡¨ç¤ºç›¸å¯¹å·¦è¾¹çš„åç§»,è´Ÿå€¼å¿½ç•¥.
+		* å½“å‚æ•°å€¼åŒ…å«Gravity.RIGHTæ—¶,å¯¹è¯æ¡†å‡ºç°åœ¨å³è¾¹,æ‰€ä»¥lp.xå°±è¡¨ç¤ºç›¸å¯¹å³è¾¹çš„åç§»,è´Ÿå€¼å¿½ç•¥.
+		* å½“å‚æ•°å€¼åŒ…å«Gravity.TOPæ—¶,å¯¹è¯æ¡†å‡ºç°åœ¨ä¸Šè¾¹,æ‰€ä»¥lp.yå°±è¡¨ç¤ºç›¸å¯¹ä¸Šè¾¹çš„åç§»,è´Ÿå€¼å¿½ç•¥.
+		* å½“å‚æ•°å€¼åŒ…å«Gravity.BOTTOMæ—¶,å¯¹è¯æ¡†å‡ºç°åœ¨ä¸‹è¾¹,æ‰€ä»¥lp.yå°±è¡¨ç¤ºç›¸å¯¹ä¸‹è¾¹çš„åç§»,è´Ÿå€¼å¿½ç•¥.
+		* å½“å‚æ•°å€¼åŒ…å«Gravity.CENTER_HORIZONTALæ—¶
+		* ,å¯¹è¯æ¡†æ°´å¹³å±…ä¸­,æ‰€ä»¥lp.xå°±è¡¨ç¤ºåœ¨æ°´å¹³å±…ä¸­çš„ä½ç½®ç§»åŠ¨lp.xåƒç´ ,æ­£å€¼å‘å³ç§»åŠ¨,è´Ÿå€¼å‘å·¦ç§»åŠ¨.
+		* å½“å‚æ•°å€¼åŒ…å«Gravity.CENTER_VERTICALæ—¶
+		* ,å¯¹è¯æ¡†å‚ç›´å±…ä¸­,æ‰€ä»¥lp.yå°±è¡¨ç¤ºåœ¨å‚ç›´å±…ä¸­çš„ä½ç½®ç§»åŠ¨lp.yåƒç´ ,æ­£å€¼å‘å³ç§»åŠ¨,è´Ÿå€¼å‘å·¦ç§»åŠ¨.
+		* gravityçš„é»˜è®¤å€¼ä¸ºGravity.CENTER,å³Gravity.CENTER_HORIZONTAL |
+		* Gravity.CENTER_VERTICAL.
+		* 
+		*/
+//		lp.x = 100; // æ–°ä½ç½®Xåæ ‡
+//		lp.y = 100; // æ–°ä½ç½®Yåæ ‡
+//		lp.width = 300; // å®½åº¦
+//		lp.height = 300; // é«˜åº¦
+//		lp.alpha = 0.7f; // é€æ˜åº¦
+//		dialogWindow.setAttributes(lp);
+		
+		keyboardDialog.setOnClickCancleListener(new OnClickCancleListener() {
+			
+			@Override
+			public void onCancle(Dialog dialog) {
+				dialog.dismiss();
+			}
+		});
+		keyboardDialog.setOnClickConfirmListener(new OnClickConfirmListener() {
+			
+			@Override
+			public void onConfirm(Dialog dialog, int freq) {
+				if (T.mScanMode)
+				{
+					stopScan();
+				}
+				mRadio.setFreq(freq);
+				setFreqToMcu(freq);
+				setListSelItem(-1);
+				UiDisplayTvCurFreq();
+				dialog.dismiss();
+			}
+		});
+		keyboardDialog.show();
+	}
+	
+	
+	/**
+	 * æœç´¢
+	 */
+	private void procSearch() {
+		if (T.mScanMode)
+		{
+			stopScan();
+		}
+		if (!T.RadioValue.mSearch)
+		{
+			/*mRadio.setDefaultFreq();
+			refleshListViewData();
+			setListSelItem(mRadio.getListSelItem());
+			setListViewSelection();
+			UiDisplaySeekBarFreq();
+			UiDisplayTvCurFreq();
+			UiDisplayImgBand();*/
+			T.mEnableReceiveFreq = true;
+			T.mSearchReq = true;
+		}
+		else
+		{
+			T.mEnableReceiveFreq = false;
+			setListSelItem(-1);
+			T.mSearchReq = false;
+		}
+		T.mSearchHadFreqNum = 0;
+		T.mSearchHadFreq = 0;
+		mRadioProxy.setSearch();
+	}
+	
+	/**
+	 * St
+	 */
+	private void procSt()
+	{
+		mRadioProxy.setST();
+	}
+	
+	/**
+	 * LOC
+	 */
+	private void procLoc()
+	{
+		if (isCurBandFM())
+		{
+			mRadioProxy.setLOC();
+//			UiDisplayImgLoc();
+		}
+	}
+	
+	/**
+	 * æµè§ˆ
 	 */
 	private void procScan() {
 		if (T.mScanMode)
 		{
 			stopScan();
-			mRadio.selListItemFreq(T.mScanItem);
-			mAdapter.setItemSel(T.mScanItem);
+			setListSelItem(T.mScanItem);
 		}
 		else
 		{
@@ -468,22 +709,242 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 			startScanItem(T.mScanItem);
 		}
 	}
+
+	
 	
 	/**
-	 * ¿ªÊ¼É¨ÃèµÚitemÏî
-	 * @param item
+	 * ä¸Šã€å·¦
+	 */
+	private void procPre(){
+		if (T.mScanMode)
+		{
+			stopScan();
+		}
+		if (T.mSearchReq)
+		{
+			T.mSearchReq = false;
+		}
+		setListSelItem(-1);
+		if (T.mStepMode)
+		{
+			mHandler.removeCallbacks(mStepModeRunnable);
+			mHandler.postDelayed(mStepModeRunnable, T.STEP_MODE_TIME);
+			mRadio.setCurFreq(mRadio.getFreqForStep(false));
+			UiDisplayTvCurFreq();
+			setFreqToMcu(mRadio.getCurFreq());
+		}
+		else
+		{
+			T.mEnableReceiveFreq = true;
+			mRadioProxy.setSearchLeft();
+		}
+	}
+	
+	/**
+	 * é•¿æŒ‰ä¸Šã€å·¦
+	 */
+	private void procPreLong(){
+		if (T.mScanMode)
+		{
+			stopScan();
+		}
+		setListSelItem(-1);
+		T.mStepMode = true;
+		mRadio.setCurFreq(mRadio.getFreqForStep(false));
+		UiDisplayTvCurFreq();
+		setFreqToMcu(mRadio.getCurFreq());
+		mHandler.removeCallbacks(mStepModeRunnable);
+		mHandler.postDelayed(mDecreaseRunnable, T.STEP_MODE_DIFF);
+	}
+	
+	/**
+	 * ä¸Šä¸€é¢‘ç‡
+	 */
+	private void procPreCh()
+	{
+		int item = mRadio.getListSelItem();
+		if (item < 0)
+		{
+			item = 0;
+		}
+		else if (item == 0)
+		{
+			item = mRadio.getFreqListNum() - 1;
+		}
+		else
+		{
+			item--;
+		}
+		setListSelItem(item);
+		setListViewSelection();
+		UiDisplayTvCurFreq();
+		setFreqToMcu(mRadio.getCurFreq());
+	}
+	
+	/**
+	 * å³ã€ä¸‹
+	 */
+	private void procNext(){
+		if (T.mScanMode)
+		{
+			stopScan();
+		}
+		if (T.mSearchReq)
+		{
+			T.mSearchReq = false;
+		}
+		setListSelItem(-1);
+		if (T.mStepMode)
+		{
+			mHandler.removeCallbacks(mStepModeRunnable);
+			mHandler.postDelayed(mStepModeRunnable, T.STEP_MODE_TIME);
+			mRadio.setCurFreq(mRadio.getFreqForStep(true));
+			UiDisplayTvCurFreq();
+			setFreqToMcu(mRadio.getCurFreq());
+		}
+		else
+		{
+			T.mEnableReceiveFreq = true;
+			mRadioProxy.setSearchRight();
+		}
+	}
+	
+	/**
+	 *é•¿æŒ‰å³ã€ä¸‹
+	 */
+	private void procNextLong(){
+		if (T.mScanMode)
+		{
+			stopScan();
+		}
+		setListSelItem(-1);
+		T.mStepMode = true;
+		mRadio.setCurFreq(mRadio.getFreqForStep(true));
+		UiDisplayTvCurFreq();
+		setFreqToMcu(mRadio.getCurFreq());
+		mHandler.removeCallbacks(mStepModeRunnable);
+		mHandler.postDelayed(mIncreaseRunnable, T.STEP_MODE_DIFF);
+	}
+	
+ 	private boolean isCurBandFM() {
+		return T.RadioValue.mBand <= T.FM_3;
+	}
+
+ 	/**
+	 * ä¸‹ä¸€é¢‘ç‡
+	 */
+	private void procNextCh()
+	{
+		int item = mRadio.getListSelItem();
+		if (item < 0)
+		{
+			item = 0;
+		}
+		else if (item == mRadio.getFreqListNum() - 1)
+		{
+			item = 0;
+		}
+		else
+		{
+			item++;
+		}
+		setListSelItem(item);
+		setListViewSelection();
+		UiDisplayTvCurFreq();
+		setFreqToMcu(mRadio.getCurFreq());
+	}
+	
+	/**
+	 * åˆ·æ–°UI
+	 */
+	private void RefreshView()
+	{
+		UiDisplayTvCurFreq();
+		UiDisplayImgBand();
+		setSeekBarBackground();
+		UiDisplayImgUnit();
+		UiDisplayImgLoc();
+		UiDisplayImgSt();
+		UiDisplayImgStInd();
+		setBtnLocState();
+		UiDisplayBtnMute();
+		refleshListViewData();
+	}
+
+
+	/**
+	 * æ›´æ–°åˆ—è¡¨
+	 */
+	private void refleshListViewData() {
+		mListData = mRadio.getFreqList();
+		if (mAdapter == null) {
+			mLvFreq = (ListView) findViewById(R.id.freq_listView);
+			mAdapter = new MyAdapter(this, mListData);
+			mAdapter.setItemSel(mRadio.getListSelItem());
+			mLvFreq.setAdapter(mAdapter);
+			mLvFreq.setOnItemClickListener(mItemClickListener);
+			mLvFreq.setOnItemLongClickListener(mItemLongClickListener);
+		} else {
+			mAdapter.OnDataChange(mListData);
+		}
+	}
+
+	
+	/**
+	 * åˆ‡æ¢SeekBarèƒŒæ™¯
+	 */
+	private void setSeekBarBackground() {
+		mSeekBarFreq.setMax(mRadio.getSeekbarMax());
+		if (isCurBandFM())
+		{
+			mSeekBarFreq.setProgressDrawable(getResources().getDrawable(R.drawable.seekbar_fm_horizontal));
+		}
+		else
+		{
+			mSeekBarFreq.setProgressDrawable(getResources().getDrawable(R.drawable.seekbar_am_horizontal));
+		}
+	}
+
+	/**
+	 * è®¾ç½®Locæ˜¯å¦å¯ç‚¹å‡»
+	 */
+	private void setBtnLocState()
+	{
+		if (isCurBandFM())
+		{
+//			mLOC_bt.setEnabled(true);
+			mBtnLoc.setClickable(true);
+		}
+		else
+		{
+//			mLOC_bt.setEnabled(false);
+			mBtnLoc.setClickable(false);
+		}
+	}
+	
+	/**
+	 * @param item ListView UIé€‰ä¸­é¡¹
+	 */
+	private void setListSelItem(int item) {
+		mRadio.selListItemFreq(item);
+		mAdapter.setItemSel(item);
+	}
+	
+	/**
+	 * @param item å¼€å§‹æµè§ˆé¡¹
 	 */
 	private void startScanItem(int item) {
 		T.mStartScanItemTime = SystemClock.elapsedRealtime();
 		T.mScanItemSel = true;
-		mRadio.selListItemFreq(item);
-		mAdapter.setItemSel(item);
+		setListSelItem(item);
+		setListViewSelection();
 		UiDisplayTvCurFreq();
+		setFreqToMcu(mRadio.getCurFreq());
 		mHandler.postDelayed(mScanModeRunnable, T.SCAN_MODE_DIFF);
 	}
 	
 	/**
-	 * Í£Ö¹É¨Ãè
+	 * åœæ­¢æµè§ˆ
 	 */
 	private void stopScan()
 	{
@@ -491,211 +952,109 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 		mHandler.removeCallbacks(mScanModeRunnable);
 	}
 	
-	/**
-	 * Ç°/×ó
+	/*
+	 ----------------------SeekBar---------------------------- 
 	 */
-	private void procPre(){
-		mRadio.selListItemFreq(-1);
-		mAdapter.setItemSel(-1);
-		if (T.mStepMode)
-		{
-			mHandler.removeCallbacks(mStepModeRunnable);
-			mHandler.postDelayed(mStepModeRunnable, T.STEP_MODE_TIME);
-			mRadio.setCurFreq(mRadio.getFreqForStep(false));
-			UiDisplayTvCurFreq();
-		}
-		else
-		{
-			//TODO sendKeyToMCU
-		}
+	private void UiDisplaySeekBarFreq() {
+		mSeekBarFreq.setProgress(mRadio.getCurFreq() - mRadio.getMinFreq());
 	}
 	
-	//³¤°´Ç°/×ó
-	private void procPreLong(){
-		LOG("procPreLong");
-		mRadio.selListItemFreq(-1);
-		mAdapter.setItemSel(-1);
-		T.mStepMode = true;
-		mHandler.postDelayed(mDecreaseRunnable, T.STEP_MODE_DIFF);
-	}
+	/*
+	 ----------------------TextView---------------------------- 
+	 */
 	
-	//ºó/ÓÒ
-	private void procNext(){
-		
-	}
-	
-	//³¤°´ºó/ÓÒ
-	private void procNextLong(){
-		
-	}
-	
- 	private boolean isCurBandFM() {
-		return T.RadioValue.mBand <= T.FM_3;
-	}
-
-	//¿ª¹ØLOC
-	private void toggleLOC()
-	{
-		if (isCurBandFM())
-		{
-			
-			T.RadioValue.mLoc = !T.RadioValue.mLoc;
-			setLocImg();
-		}
-	}
-	
-	//Ë¢ĞÂUI
-	private void RefreshView()
-	{
-		UiDisplayTvCurFreq();
-		setBandImg();
-		setSeekBarBackground();
-		setUnitImg();
-		setLocImg();
-		setSTImg();
-		setOOImg();
-		setLocButton();
-		UiDisplayBtnMute();
-		refleshListView();
-	}
-
-	
-
-	//¸üĞÂÁĞ±í
-	private void refleshListView() {
-		mListData = mRadio.getFreqList();
-		if (mAdapter == null) {
-			mFreqList = (ListView) findViewById(R.id.freq_listView);
-			mAdapter = new MyAdapter(this, mListData);
-			mAdapter.setItemSel(mRadio.getListSelItem());
-			mFreqList.setAdapter(mAdapter);
-			mFreqList.setOnItemClickListener(mItemClickListener);
-			mFreqList.setOnItemLongClickListener(mItemLongClickListener);
-		} else {
-			mAdapter.OnDataChange(mListData);
-		}
-	}
-	private void setSeekBarValue() {
-		mFreqSeekBar.setProgress(mRadio.getCurFreq() - mRadio.getMinFreq());
-	}
-	
-	//ÉèSeekBar±³¾°
-	private void setSeekBarBackground() {
-		mFreqSeekBar.setMax(mRadio.getSeekbarMax());
-		if (isCurBandFM())
-		{
-			mFreqSeekBar.setProgressDrawable(getResources().getDrawable(R.drawable.seekbar_fm_horizontal));
-		}
-		else
-		{
-			mFreqSeekBar.setProgressDrawable(getResources().getDrawable(R.drawable.seekbar_am_horizontal));
-		}
-	}
-
-	//Éèµ±Ç°ÆµÂÊ
 	private void UiDisplayTvCurFreq()
 	{
-		mCurFreq_tv.setText(mRadio.getDisplayFreq(mRadio.getCurFreq()));
+		mTvCurFreq.setText(mRadio.getDisplayFreq(mRadio.getCurFreq()));
 		File file = new File("/ResidentFlash/ZuiLauncher/data/fonts/digital-7-italic.ttf");
 		if (file.exists())
 		{
-			LOG("file exists");
+//			LOG("file exists");
 			Typeface typeface = Typeface.createFromFile(file);
-			mCurFreq_tv.setTypeface(typeface);
+			mTvCurFreq.setTypeface(typeface);
 		}
 		else
 		{
-			LOG("file not exists");
+//			LOG("file not exists");
 		}
-		setSeekBarValue();
+		/*Typeface typeface = Typeface.createFromAsset(getAssets(), "digital-7-italic.ttf");
+		if (typeface != null)
+		{
+			mTvCurFreq.setTypeface(typeface);
+		}*/
+		UiDisplaySeekBarFreq();
 	}
 	
-	//²¨¶ÎÍ¼Æ¬
-	private void setBandImg()
+	/*
+	 ----------------------Image---------------------------- 
+	 */
+	private void UiDisplayImgBand()
 	{
 		if (isCurBandFM())
 		{
-			mBand_img.setBackgroundResource(R.drawable.fm);
+			mImgBand.setBackgroundResource(R.drawable.fm);
 		}
 		else
 		{
-			mBand_img.setBackgroundResource(R.drawable.am);
+			mImgBand.setBackgroundResource(R.drawable.am);
 		}
 	}
 	
-	//µ¥Î»Í¼Æ¬
-	private void setUnitImg()
+	private void UiDisplayImgUnit()
 	{
 		if (isCurBandFM())
 		{
-			mUnit_img.setBackgroundResource(R.drawable.mhz);
+			mImgUnit.setBackgroundResource(R.drawable.mhz);
 		}
 		else
 		{
-			mUnit_img.setBackgroundResource(R.drawable.khz);
+			mImgUnit.setBackgroundResource(R.drawable.khz);
 		}
 	}
 	
-	//LOCÍ¼Æ¬
-	private void setLocImg()
+	private void UiDisplayImgLoc()
 	{
 		if (isCurBandFM() && T.RadioValue.mLoc)
 		{
-			mLOC_img.setBackgroundResource(R.drawable.loc_sel);
+			mImgLoc.setBackgroundResource(R.drawable.loc_sel);
 		}
 		else
 		{
-			mLOC_img.setBackgroundResource(R.drawable.loc_inval);
+			mImgLoc.setBackgroundResource(R.drawable.loc_inval);
 		}
 	}
 	
-	//STÍ¼Æ¬
-	private void setSTImg()
+	private void UiDisplayImgSt()
 	{
-		if (isCurBandFM() && T.RadioValue.mST)
+		if (isCurBandFM() && T.RadioValue.mSt)
 		{
-			mST_img.setBackgroundResource(R.drawable.st_sel);
+			mImgSt.setBackgroundResource(R.drawable.st_sel);
 		}
 		else
 		{
-			mST_img.setBackgroundResource(R.drawable.st_inval);
+			mImgSt.setBackgroundResource(R.drawable.st_inval);
 		}
 	}
 	
-	//OOÍ¼Æ¬
-	private void setOOImg()
+	private void UiDisplayImgStInd()
 	{
-		if (isCurBandFM() && T.RadioValue.mOO)
+		if (isCurBandFM() && T.RadioValue.mStInd)
 		{
-			mOO_img.setBackgroundResource(R.drawable.oo_sel);
-			mOO_img.setVisibility(View.VISIBLE);
+			mImgStInd.setBackgroundResource(R.drawable.stind_sel);
+			mImgStInd.setVisibility(View.VISIBLE);
 		}
 		else
 		{
-			mOO_img.setVisibility(View.INVISIBLE);
+			mImgStInd.setVisibility(View.INVISIBLE);
 		}
 	}
 	
-	//ÉèLoc°´¼ü
-	private void setLocButton()
-	{
-		if (isCurBandFM())
-		{
-//			mLOC_bt.setEnabled(true);
-			mLOC_bt.setClickable(true);
-		}
-		else
-		{
-//			mLOC_bt.setEnabled(false);
-			mLOC_bt.setClickable(false);
-		}
-	}
-	
-	/**
-	 * ¾²Òô°´¼ü
+	/*
+	 ----------------------Button---------------------------- 
 	 */
+	
 	private void UiDisplayBtnMute() {
-		mMute_bt.setSelected(T.RadioValue.mMute);
+		mBtnMute.setSelected(T.RadioValue.mMute);
 		/*if (T.RadioValue.mMute)
 		{
 //			mMute_bt.setBackgroundResource(R.drawable.mute_selector);
@@ -717,19 +1076,49 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-//		LOG("fromUser£º " + fromUser);
+//		LOG("fromUser " + fromUser);
 		if (fromUser)
 		{
 			int freq = mRadio.getMinFreq() + progress;
 			if (Math.abs(freq - mRadio.getCurFreq()) >= mRadio.getFreqStep())
 			{
-				mRadio.setCurFreq(freq/mRadio.getFreqStep()*mRadio.getFreqStep());
-				UiDisplayTvCurFreq();
-				mRadio.selListItemFreq(-1);
-				mAdapter.setItemSel(-1);
-				//TODO ÉèÖÃÆµÂÊ
-//				LOG("µ±Ç°ÆµÂÊÎª£º " + mRadio.getCurFreq());
+				seekToFreq(freq/mRadio.getFreqStep()*mRadio.getFreqStep());
 			}
+		}
+	}
+
+	private void seekToFreq(int freq) {
+		if (T.mScanMode)
+		{
+			stopScan();
+		}
+		
+		mRadio.setCurFreq(freq);
+		UiDisplayTvCurFreq();
+		setListSelItem(-1);
+		setFreqToMcu(freq);
+	}
+
+	/**
+	 * è®¾é¢‘ç‡åˆ°MCU
+	 * @param freq
+	 */
+	private void setFreqToMcu(int freq) {
+		
+		if (T.mSearchReq)
+		{
+			T.mSearchReq = false;
+		}
+		
+		T.mEnableReceiveFreq = false;
+		
+		if (mRadio.isFM())
+		{
+			mRadioProxy.setFreq(T.FM_1, freq);
+		}
+		else
+		{
+			mRadioProxy.setFreq(T.AM_1, freq);
 		}
 	}
 

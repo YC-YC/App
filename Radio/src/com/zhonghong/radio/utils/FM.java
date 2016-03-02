@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * @author YC
- * @time 2016-2-23 ÏÂÎç6:26:30
+ * @time 2016-2-23 ï¿½ï¿½ï¿½ï¿½6:26:30
  */
 public class FM implements RadioInterface {
 
@@ -82,8 +82,16 @@ public class FM implements RadioInterface {
 
 	@Override
 	public void saveListItemFreq(int item, int freq) {
-		T.RadioValue.mFMSelItem = item;
-		T.RadioValue.mFMFreqList.set(item, freq);
+		if (item >= T.RadioValue.mFMFreqList.size())
+		{
+			T.RadioValue.mFMFreqList.add(freq);
+			T.RadioValue.mFMSelItem = item;
+		}
+		else
+		{
+			T.RadioValue.mFMSelItem = item;
+			T.RadioValue.mFMFreqList.set(item, freq);
+		}
 	}
 
 	@Override
@@ -122,5 +130,22 @@ public class FM implements RadioInterface {
 	public int getFreqListNum() {
 		return T.RadioValue.mFMFreqList.size();
 	}
+
+	@Override
+	public void setDefaultFreq() {
+		T.RadioValue.mFMFreqList.clear();
+		
+		T.RadioValue.mFMFreqList.add(8750);
+		T.RadioValue.mFMFreqList.add(9010);
+		T.RadioValue.mFMFreqList.add(9810);
+		T.RadioValue.mFMFreqList.add(10610);
+		T.RadioValue.mFMFreqList.add(10800);
+		T.RadioValue.mFMFreqList.add(8750);
+		T.RadioValue.mFMSelItem = -1;
+		
+		T.RadioValue.mCurFMFreq = 8750;
+		T.RadioValue.mBand = T.FM_1;
+	}
+
 
 }

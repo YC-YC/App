@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * @author YC
- * @time 2016-2-23 ÏÂÎç6:01:59
+ * @time 2016-2-23 ï¿½ï¿½ï¿½ï¿½6:01:59
  */
 public class T {
 
@@ -15,16 +15,16 @@ public class T {
 	public static final int AM_1 = 3;
 	public static final int AM_2 = 4;
 	
-	public static final int STEP_MODE_TIME = 3*1000;	//²½½øÊ±¼ä3S
-	public static final int STEP_MODE_DIFF = 3*100;		//²½½øÊ±¼ä300ms
+	public static final int STEP_MODE_TIME = 3*1000;	//æ­¥è¿›æ€»è®¡æ—¶æ—¶é—´3S
+	public static final int STEP_MODE_DIFF = 3*100;		//æ­¥è¿›ä¸Šã€ä¸‹å€¼300ms
 	
-	public static final int SCAN_MODE_TIME = 5*1000;	//²½½øÊ±¼ä5S
-	public static final int SCAN_MODE_DIFF = 5*100;		//²½½øÊ±¼ä500ms
+	public static final int SCAN_MODE_TIME = 5*1000;	//æ‰«æå•é¡¹æ€»æ—¶é—´5S
+	public static final int SCAN_MODE_DIFF = 5*100;		//æ‰«æå•é¡¹é—ªçƒæ—¶é—´500ms
 	
 	
-	public static final int LIST_COUNT = 3;		//ÁĞ±í¸öÊı
+	public static final int LIST_COUNT = 6;		//åˆ—è¡¨ä¸ªæ•°
 	
-	public static final String RADIO_INFO_FILE = "radioinfo";		//ÊÕÒô»úĞÅÏ¢
+	public static final String RADIO_INFO_FILE = "radioinfo";		//é…ç½®æ–‡ä»¶å
 	
 	public static final String RADIO_INFO_KEY_BAND = "band";	
 	
@@ -39,24 +39,37 @@ public class T {
 	public static final String RADIO_INFO_KEY_AM_SELITEM = "CurAMSelItem";
 	
 	
-	public static boolean mStepMode = false;	//²½½øÄ£Ê½
-	public static long mLastLongClickTime = 0;	//×óÓÒ¼üµÄ×îºó³¤°´Ê±¼ä
+	public static boolean mStepMode = false;	//æ­¥è¿›æ¨¡å¼
+	public static long mLastLongClickTime = 0;	//æœ€åæŒ‰ä¸‹æ—¶é—´
 	
-	public static boolean mScanMode = false;	//ä¯ÀÀÄ£Ê½
-	public static int mScanItem = 0;		//ä¯ÀÀÏî
-	public static boolean mScanItemSel = false;	//ä¯ÀÀÏî±»Ñ¡ÖĞ
-	public static long mStartScanItemTime = 0;	//¿ªÊ¼ä¯ÀÀÄ³Ò»ÏîµÄÊ±¼ä
+	public static boolean mScanMode = false;	//æµè§ˆæ¨¡å¼
+	public static int mScanItem = 0;		//æµè§ˆé¡¹
+	public static boolean mScanItemSel = false;	//æµè§ˆé¡¹é€‰ä¸­
+	public static long mStartScanItemTime = 0;	//å¼€å§‹æµè§ˆå•é¡¹æ—¶é—´
+	
+	public static int mSearchHadFreqNum = 0;	//æœå°æ•°
+	public static int mSearchHadFreq = 0;	//æœå°æœ‰æ•ˆé¢‘ç‡
+	/**
+	 * æœå°æ ‡è®°ï¼ŒåŒºåˆ†ä¸Šä¸‹æœå°
+	 */
+	public static boolean mSearchReq = false;	//æœå°æ ‡è®°
+	
+	/**
+	 * åªæœ‰åœ¨æœç´¢æ—¶æ‰å…è®¸æ¥æ”¶é¢‘ç‡
+	 */
+	public static boolean mEnableReceiveFreq = false;
 	
 	
-	//ÊÕÒô»úµÄÖµ
+	//æ”¶éŸ³æœºå…¨å±€ä¿¡æ¯
 	public static class RadioValue{
 		public static int mBand = FM_1;
 		
 		public static boolean mMute = false;
 		
 		public static boolean mLoc = true;
-		public static boolean mST = true;
-		public static boolean mOO = true;
+		public static boolean mSt = true;
+		public static boolean mStInd = true;
+		public static boolean mSearch = false;
 		
 		//FM Value
 		public static int mMinFMFreq = 8750;
@@ -75,8 +88,8 @@ public class T {
 		public static List<Integer> mAMFreqList = new ArrayList<Integer>();
 	}
 	
-	//BITÎ»1ÎªÓĞĞ§
-		public static final int KEYBOARD_EFFECTIVE_189 = 0x302; //11,0000,0010,189¸ßÁÁ
+	//BITä½ä¸º1ä»£è¡¨æœ‰æ•ˆ
+		public static final int KEYBOARD_EFFECTIVE_189 = 0x302; //11,0000,0010,189ï¿½ï¿½ï¿½ï¿½
 		public static final int KEYBOARD_EFFECTIVE_16789 = 0x3A2; //11,1100,0010
 		public static final int KEYBOARD_EFFECTIVE_0_8 = 0x1FF; //01,1111,1111
 		public static final int KEYBOARD_EFFECTIVE_0_7 = 0x0FF; //00,1111,1111

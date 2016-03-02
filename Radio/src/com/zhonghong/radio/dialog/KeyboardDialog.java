@@ -1,8 +1,5 @@
 package com.zhonghong.radio.dialog;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.util.Log;
@@ -20,7 +17,7 @@ import com.zhonghong.radio.utils.T;
 
 /**
  * @author YC
- * @time 2016-2-25 ÏÂÎç8:21:20
+ * @time 2016-2-25 ï¿½ï¿½ï¿½ï¿½8:21:20
  */
 public class KeyboardDialog extends Dialog implements android.view.View.OnClickListener, OnLongClickListener{
 
@@ -109,7 +106,7 @@ public class KeyboardDialog extends Dialog implements android.view.View.OnClickL
 	}
 
 	/**
-	 * ×Ô¶¨Òå½çÃæ
+	 * è‡ªå®šä¹‰ç•Œé¢
 	 */
 	private void setCustomView() {
 
@@ -131,7 +128,7 @@ public class KeyboardDialog extends Dialog implements android.view.View.OnClickL
 
 
 	/**
-	 * Ë¢ÐÂUI²¿¼þ
+	 *æ›´æ–°æ‰€æœ‰ç•Œé¢
 	 */
 	private void refreshAllView() {
 		
@@ -157,9 +154,13 @@ public class KeyboardDialog extends Dialog implements android.view.View.OnClickL
 				{
 					mInputFreq.setText(freq + ".");
 				}
-				else if (freq >= 875)
+				else if (freq >= 875 && freq <= 1080)
 				{
 					mInputFreq.setText(freq/10 + "." + freq%10);
+				}
+				else if (freq >= 8750)
+				{
+					mInputFreq.setText(freq/100 + "." + (freq%100)/10 + (freq%10));
 				}
 				else
 				{
